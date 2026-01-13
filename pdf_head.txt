@@ -1,0 +1,684 @@
+First Published in 2008 by Victory Belt Publishing.
+
+Copyright © 2008 Saulo Ribeiro and Kevin Howell
+
+
+All rights reserved. No part of this publication may be reproduced or distributed in any form or by any means, electronic or mechanical,
+or stored in a database or retrieval system, without prior permission from the publisher.
+
+
+ISBN 13: 978-0-9815044-3-8
+
+ISBN 10: 0-9815044-3-4
+
+
+This book is for educational purposes. The publisher and authors of this instructional book are not responsible in any manner whatsoever
+for any adverse effects directly or indirectly as a result of the information provided in the book. If not practiced safely and with caution,
+martial arts can be dangerous to you and to others. It is important to consult with a professional martial arts instructor before beginning
+training. It is also very important to consult with a physician prior to training due to the intense and strenuous nature of the techniques in
+this book.
+
+
+Victory Belt ® is a registered trademark of Victory Belt Publishing.
+
+Printed in Hong Kong.
+
+Cover design by: Haley Woods
+
+Cover photo by: Catarina Monnier
+
+Photographs by: Erich Krauss
+
+Layout & design by: Haley Woods
+
+Technical Editor: John Danaher
+                            CONTENTS
+Introduction to Jiu-Jitsu
+
+                               SURVIVAL
+
+ 1.0 THE BACK
+1-0 THE BACK SURVIVAL POSITION
+1-1 HAND FIGHTING
+1-2 THE SCOOP
+1-3 COMMON MISCONCEPTIONS
+ 2.0 ALL-FOURS
+2-0 SURVIVING ALL-FOURS BACK POSITION
+2-1 SOLO ALL-FOURS SURVIVAL
+2-2 ALL-FOURS SURVIVAL DRILL
+2-3 ALL-FOURS DETAIL
+2-4 ROLLING TO BACK SURVIVAL
+2-5 COMMON MISCONCEPTIONS
+ 3.0 THE MOUNT
+3-0 SURVIVING THE MOUNT
+3-1 SOLO MOUNT SURVIVAL DRILL
+3-2 EARLY POSTURE
+3-3 NULLIFYING THE CHOKE
+3-4 ERROR IN CHOKE SURVIVAL
+3-5 SEATED MOUNT SURVIVAL
+3-6 COMMON MISCONCEPTIONS
+ 4.0 SIDE CONTROL
+4-0 SIDE CONTROL SURVIVAL
+4-1 BLOCKING THE CROSS-FACE
+4-2 RELEASING THE HAND
+4-3 KESA GATAME HAND FIGHTING
+4-4 REVERSE KESA GATAME
+4-5 COMMON MISCONCEPTIONS
+ 5.0 KNEE-ON-BELLY
+5-0 KNEE-ON-BELLY SURVIVAL
+5-1 SOLO KNEE-ON-BELLY PREVENTION
+5-2 STRAIGHT-LEGGED PREVENTION
+5-3 IMPORTANCE OF PREVENTION
+5-4 RUNNING SURVIVAL POSTURE
+5-5 EXPOSED ROLL
+5-6 COMMON MISCONCEPTIONS
+ 6.0 THE BACK
+6-0 ESCAPING THE BACK
+6-1 COMMON MISTAKE
+6-2 BODY LOCK ESCAPE
+6-3 ESCAPING DOUBLE-UNDERHOOK CONTROL
+6-4 ESCAPING ALL-FOURS DRILL
+
+                                 ESCAPES
+
+ 7.0 THE MOUNT
+7-0 SOLO MOUNT ELBOW ESCAPE DRILL
+7-1 MOUNT ELBOW ESCAPE
+7-2 SEATED MOUNT ESCAPE
+ 8.0 SIDE CONTROL
+8-0 SOLO SIDE CONTROL DRILLS
+8-1 SIDE CONTROL TO GUARD RECOVERY
+8-2 SIDE CONTROL ESCAPE TO THE KNEES
+8-3 SIDE CONTROL RUNNING ESCAPE
+8-4 ESCAPE FROM KESA GATAME
+8-5 ESCAPE FROM REVERSE KESA GATAME
+8-6 ESCAPE AGAINST WRESTLER’S PIN
+ 9.0 KNEE-ON-BELLY
+9-0 KNEE-ON-BELLY RUNNING ESCAPE
+ 10.0 ARMBAR
+10-0 ARMBAR ESCAPE MOVEMENT DRILL
+10-1 COMMON MISCONCEPTIONS
+10-2 ARMBAR ESCAPE TO GUARD PASS
+10-3 ARMBAR ESCAPE TO GUARD PASS 2
+10-4 ARMBAR ESCAPE FROM BOTTOM
+ 11.0 TRIANGLE
+11-0 TRIANGLE ESCAPE TO PASS
+11-1 COMMON MISCONCEPTIONS
+ 12.0 GUILLOTINE
+12-0 CLASSIC GUILLOTINE ESCAPE
+12-1 ARM-IN GUILLOTINE ESCAPE
+ 13.0 FOOTLOCK
+13-0 SOLO FOOTLOCK ESCAPE DRILL
+13-1 FOOTLOCK ESCAPE FROM GUARD
+ 14.0 KIMURA
+14-0 KIMURA ESCAPE FROM HALF GUARD
+14-1 KIMURA ESCAPE TO ARMBAR POSTURE
+ A. CLOSED GUARD AGAINST KNEELING OPPONENT
+15-0 CLOSED GUARD ARM WRAP
+15-1 SOLO ARM WRAP CHOKE TO STRAIGHT ARMLOCK
+15-2 ARM WRAP CHOKE TO STRAIGHT ARMLOCK
+15-3 CLOSED GUARD OVERWRAP
+15-4 OVERWRAP TO BACK
+15-5 SCISSOR / KNEE SHIELD
+15-6 CLASSIC ARMBAR
+15-7 ARMBAR TO CROSS CHOKE DRILL
+15-8 BRABO CHOKE
+15-9 CLASSIC TRIANGLE CHOKE
+15-10 SOLO HIP BUMP SWEEP
+15-11 HIP BUMP SWEEP
+15-12 FLOWER SWEEP
+ B. CLOSED GUARD AGAINST STANDING OPPONENT
+16-0 FRUSTRATING STANDING BASE
+16-1 HIP PUSH SWEEP
+16-2 CLASSIC UNDERHOOK SWEEP
+16-3 ROLLOUT AGAINST UNDERHOOK DEFENSE
+16-4 COMMON MISCONCEPTIONS
+ 17.0 GUARD PASS DEFENSE
+ A. UNDER-THE-LEG PASS DEFENSE
+17-1 SINGLE UNDER-THE-LEG PASS DEFENSE124
+17-2 DOUBLE UNDER-THE-LEGS DEFENSE TO SWEEP
+ B. OVER-THE-LEGS PASS DEFENSE
+17-3 LEG-SQUEEZE DEFENSE
+17-4 FAILED LEG-SQUEEZE DEFENSE
+17-5 OVER-AND-UNDER SMASH DEFENSE
+17-6 FAILED OVER-AND-UNDER SMASH DEFENSE
+17-7 SAME-SIDE KNEE BLOCK
+17-8 FAILED SAME-SIDE KNEE BLOCK
+17-9 KNEE-SLIDE BLOCK
+17-10 EARLY TORREANDO GRIP BREAK
+17-11 COLLAR DRAG OFF TORREANDO DEFENSE
+17-12 ANKLE PICK OFF TORREANDO DEFENSE
+17-13 LATE TORREANDO BLOCK
+17-14 TWO-HANDED TORREANDO BLOCK
+17-15 STRAIGHT ARMLOCK
+17-16 OMOPLATA OFF STRAIGHT ARMLOCK
+
+                                THE GUARD
+
+ 18-0 BUTTERFLY GUARD
+18-1 CONTROL AND DISTANCE
+18-2 CONTROL AND MOVEMENT
+18-3 SOLO BUTTERFLY SWEEP
+18-4 CLASSIC BUTTERFLY SWEEP
+18-5 FAILED BUTTERFLY SWEEP
+18-6 WING SWEEP
+18-7 STRAIGHT ARMLOCK DRILL
+18-8 CLASSIC CROSS-CHOKE
+18-9 PALM UP-PALM DOWN CHOKE
+ 19-0 SPIDER GUARD
+19-1 CONTROL AND MOVEMENT
+19-2 FAILED CONTROL AND MOVEMENT
+19-3 SWEEP OFF A PASS
+ 20-0 CROSS-GRIP GUARD
+20-1 POSTURE161
+20-2 FAILED POSTURE
+20-3 CLASSIC TRIPOD SWEEP
+20-4 CROSS-GRIP BACKROLL SWEEP
+ 21-0 DE LA RIVA
+21-1 STARTING POSITION
+21-2 POSTURE BLOCKED
+21-3 ROLLOVER SWEEP
+21-4 DE LA RIVA TO TOMOE-NAGE SWEEP
+ 22-0 SIT-UP GUARD
+22-1 POSTURE DRILL
+22-2 SIT-UP GUARD TO CLASSIC SWEEP
+22-3 REVERSE ROLL SWEEP
+22-4 FAILED REVERSE ROLL SWEEP
+ 23-0 REVERSE DE LA RIVA GUARD
+23-1 POSITIONING
+23-2 REVERSE DE LA RIVA DRILL
+23-3 FAILED POSITIONING
+23-4 KNEE PUSH SWEEP
+ 24-0 HALF GUARD
+24-1 REGAINING GUARD OR CONTROL
+24-2 IMPROPER CONTROL
+24-3 DEEP CONTROL
+24-4 GETTING EVEN DEEPER
+24-5 BACKDOOR TO BACK
+24-6 BOTTOM ARMLOCK - KIMURA
+24-7 INCORRECT KIMURA
+
+                               GUARD PASSING
+
+ A. PASSING THE CLOSED GUARD FROM THE KNEES
+25-0 BLOCKING THE COLLAR GRIP
+25-1 DEFEATING THE CROSS-COLLAR GRIP
+25-2 OVERHOOK GUARD ESCAPE
+25-3 ESCAPING OVER-THE-SHOULDER BELT GRIP
+25-4 CLASSIC OPENING ON THE KNEES
+25-5 BLOCKING THE TRIANGLE
+25-6 FAILED TRIANGLE BLOCK
+25-7 OPENING WHEN OPPONENT HIDES BOTH ARMS
+25-8 BASIC SINGLE UNDERHOOK OPENING
+25-9 BASIC UNDERHOOK PASS
+25-10 BEATING THE BLOCKED HIP
+25-11 BASIC UNDERHOOK PASS VARIATION
+25-12 DOUBLE UNDERHOOK PASS
+25-13 DOUBLE UNDERHOOK PASS VARIATION
+25-14 COMBAT BASE TO BASIC PASS
+ B. PASSING THE GUARD FROM STANDING
+25-15 BASE WARM-UP
+25-16 STANDING CORRECTLY VS. INCORRECTLY
+25-17 STANDING OPENING WITH HIP PRESSURE
+25-18 DEFENSIVE SQUATTING & STANDING OPEN
+25-19 OPEN WHEN OPPONENT HIDES ONE ARM
+25-20 OPEN AGAINST LONG LEGS
+25-21 ARMPIT GRIP OPENING & BRIDGE DEFEATING
+25-22 OPENING AGAINST DOUBLE UNDERHOOKS
+ 26-0 CORE OPEN GUARD PASSES
+26-1 LEG ROPE FRONT
+26-2 LEG ROPE BACK
+26-3 LEG ROPE SIDE SWITCH & SMASH
+26-4 KNEE CROSS PASS
+26-5 KNEE CROSS AGAINST LAPEL GRIP
+26-6 ANGLE CHANGE TO KNEE PASS
+26-7 TORREANDO & APPROACH
+26-8 TORREANDO AGAINST ONE HOOK
+26-9 TORREANDO W/ HIP CONTROL DRILL
+26-11 TWO-ON-ONE LEG PASS
+ 27-0 BUTTERFLY GUARD PASSES
+27-1 POSTURE & BALANCE
+27-2 FLAT BUTTERFLY–WALK-AROUND PASS
+27-3 WALLID ISMAEL VARIATION
+27-4 WRAP-THE-LEGS PASS
+27-5 HAND PLANT PASS
+27-6 LEVEL CHANGE PASS
+27-7 FORWARD KNEE-PRESS PASS
+27-8 PASSING THE CROSS-GRIP
+27-9 FLOATING HIP-SWITCH PASS
+27-10 FLOATING HIP-SWITCH AGAINST PANT GRAB
+27-11 THE STAR PASS
+27-12 TRANSITION TO MOUNT OFF PASS
+27-13 STAND-UP WHEEL PASS
+27-14 X PASS
+27-15 SHIN-TO-SHIN PASS
+ 28-0 SPIDER GUARD PASSES
+28-1 BREAK & PASS
+28-2 LEG LASSO PASS
+ 29-0 CROSS GRIP PASSES
+29-1 SAME SIDE PASS
+ 30-0 DE LA RIVA PASSES
+30-1 UNLOCK & PASS
+30-2 HOOK ESCAPE PASS
+30-3 PASSING THE DEEP DE LA RIVA
+ 31-0 SIT-UP GUARD
+31-1 STEP-AROUND PASS
+31-2 UNDERHOOK TO MOUNT
+31-3 UNDERHOOK TO KNEE-UP-THE-MIDDLE VARIATION
+ 32-0 REVERSE DE LA RIVA PASSES
+32-1 HIP SMASH
+32-2 FLOATING PASS
+ 33-0 INVERTED GUARD PASSES
+33-1 HIP PASS
+33-2 DANGER OF CIRCLING
+ 34-0 PASSING THE X-GUARD
+34-1 BALANCE BALL BREAK & PASS
+34-2 BREAK & PASS
+ 35-0 HALF GUARD PASSES
+35-1 FLATTENING THE OPPONENT
+35-2 STRAIGHT LEG PASS WITH KNEE BLOCK
+35-3 BASE-SWITCH PASS WITH SHIN
+35-4 BLOCKED ARM PASS
+35-5 XANDE’S FLATTENING PASS
+35-6 SHIN SLIDE PASS
+35-7 ESGRIMA PASS
+35-8 ESGRIMA MOUNT
+35-9 FREDSON ALVES’ ESGRIMA PASS
+35-10 WHIZZER ARMBAR FEINT PASS
+35-11 THE OPPOSITE SIDE PASS
+35-12 OPPOSITE PASS AGAINST UNDERHOOK
+35-13 OPPOSITE-SIDE PASS TO MOUNT
+35-14 HALF MOUNT PASS
+35-15 HALF MOUNT TO KNEE CROSS
+35-16 DEEP HALF—LEG PULLOUT
+35-17 HALF BUTTERFLY HIP-SWITCH
+35-18 OPEN HALF GUARD HIP-DRIVE PASS
+35-19 OPEN HALF GUARD LEMON SQUEEZE PASS
+
+                               SUBMISSIONS
+
+ 36-0 THE BACK
+36-1 GETTING THE COLLAR: BOW & ARROW CHOKE
+36-2 ARMBAR AGAINST CHOKE DEFENSE
+36-3 ARM & COLLAR CHOKE
+36-4 EZEQUIEL CHOKE FROM THE BACK
+ 37-0 THE MOUNT
+37-1 THE AMERICANA
+37-2 MOUNTED ARMBAR
+37-3 EZEQUIEL
+37-4 KATA GATAME
+37-5 PALM UP/PALM DOWN CHOKE
+37-6 PALM UP/PALM UP CHOKE
+37-7 TRIANGLE CHOKE
+37-8 S-MOUNT CROSS CHOKE
+37-9 S-MOUNT ARMBAR
+37-10 KATA GATAME TO EZEQUIEL
+37-11 COLLAR CHOKE DRILL
+ 38-0 SIDE CONTROL
+38-1 KIMURA
+38-2 WALK-AROUND ARMBAR
+38-3 ROYLER’S ARMBAR
+38-4 SPINNING ARMBAR
+38-5 FAILED SPINNING ARMBAR
+38-6 SPINNING ARMBAR TO KIMURA
+38-7 STEP-OVER CHOKE
+38-8 BREAD CUTTER CHOKE
+38-9 BASEBALL CHOKE
+ 39-0 TURTLE TOP
+39-1 CLOCK CHOKE
+ 40-0 HALF GUARD
+40-1 BRABO CHOKE
+40-2 BRABO TO STRAIGHT ARMLOCK
+ 41-0 GUARD TOP
+41-1 STRAIGHT ANKLE LOCK
+                                  ACKNOWLEDGEMENTS
+ First of all, I would like to thank God for bringing me into the world strong, healthy, and into a family like mine.
+      To my mom for spoiling me in a good way and being my first example of a great woman and mother,
+  To my father for building in me all the values that a man should have in order to survive in the modern world,
+To my brother for being my other half and going through all the pain and learning together, all battles that made us
+                                       strong with blood, sweat, and tears.
+                    To my sister and niece for all the unconditional love that I feel in my heart,
+       To Royler Gracie, my mentor, friend, older brother, sensei and everything in the martial arts world,
+        To all my students that I’ve been teaching all over the world, especially the ones in Gracie Tijuca,
+   To Chris Blanke and Lucas Beddow for being my American older brothers and helping me in my decisions,
+                        To all of you that love the art that means the world to me: Jiu-Jitsu.
+                                                                                                      —Saulo Ribeiro
+
+  To Haley, for the hours and hours of hard work, redesigns, and brainstorming sessions to make sure this book
+                                               became a reality.
+To John Danaher, for being a gentleman and a scholar. Without your guidance and mentorship, this book would not
+                                                 be what it is.
+           To Billie Hunt, for dotting the “i”s and crossing the “t”s. Thank you so much for everything.
+                           To all my friends and family, thanks for enabling my dream.
+                                                                                                      —Kevin Howell
+                                      Introduction to Jiu-Jitsu
+    “Technical knowledge is not enough. One must transcend techniques so that the art
+                becomes an artless art, growing out of the unconscious.”
+                                                                                                     —Daisetsu Suzuki
+
+                                                   LEVERAGE
+      Rickson Gracie seeded and molded all my philosophy and thinking regarding jiu-jitsu. I am thankful not only
+for his technique and competition strategy, but for all his knowledge. This is what I teach today. My jiu-jitsu is
+based on his knowledge of leverage.
+      Everybody talks about leverage, but few people use it in their jiu-jitsu. Everything I show in this book relates to
+the efficiency of the lever and the fulcrum. How can I lift a man twice as heavy as myself? How can I armlock
+someone who is three times as strong? The answer is always the same – leverage. Keep this in mind when grappling.
+Always look for positions that multiply your perceived strength while minimizing that of your opponent. These are
+the leverage points that must be sought.
+
+                                            FEELING JIU-JITSU
+      “If you think, you are late. If you are late, you use strength. If you use strength, you tire. And if you tire, you
+die.”
+      This is one of my favorite quotes, and it means that all jiu-jitsu must be based on how you feel your opponent.
+The timing to make a decision is not based on what you think you should be doing. It is about your body recognizing
+the move and automatically doing it. It’s about muscle memory. For example, when someone is passing your guard,
+you feel he is passing so you cannot wait to decide what to do. There is no time for thought – only reaction.
+      This is one thing I developed a long time ago from my teachers – my jiu-jitsu would be based on reaction.
+When you react, you don’t give your mind the time to get filled with emotions. You are devoid of anger, fear, and
+frustration; you are simply moving. If your opponent is pushing your elbow and you’re tired and almost hurt, it
+doesn’t matter because you are reacting already; you haven’t given yourself time to get upset. That’s why I follow
+this motto: no mind. If you do not think, you must feel your opponent and react accordingly.
+
+                                            THE BELT SYSTEM
+     The jiu-jitsu belt system serves to indicate the level of a practitioner’s experience. The belts range from the
+novice levels of white and blue belt to the intermediate level of purple to the advanced levels of brown and black.
+The following is an indication of what a student should look for at each level.
+
+                                                 WHITE BELT
+      I compare the white belt to the beginning of the life cycle, from birth to socialization. Just as the child must
+trust his mother, the white belt must believe in the good will of his instructor. There will be time for questioning, but
+for now he must focus and train. I believe white belts should be exposed to all the possible attacks, moves, and
+positions that jiu-jitsu entails because I want them to become aware of how to do everything correctly to progress.
+      Many think that some moves are too advanced for white belts. I disagree. I think that part of a white belt’s
+foundation is to know all the aspects of jiu-jitsu. Although the white belt cannot dive into the intricacies of every
+little thing but must start with proper fundamentals, knowledge of what those intricacies are is necessary for
+progress to happen. If you are going to be attacked by it, you might as well know it. It’s a matter of learning
+survival. White belts won’t be able to perfect any of it until they have learned to survive.
+      As a journey, the duration of the white belt is between six to eighteen months, depending on the student’s
+background. Because the transition from white to blue belt is the most important process that an individual must go
+through in jiu-jitsu, I make sure each student is ready for his promotion.
+      Some people feel that talent or athleticism should result in an instant promotion to a higher belt. You may be a
+good wrestler and can beat a few guys, but what about your principles and fundamentals? I will not promote
+someone because he can use strength; I must see more than that. This is why I must know all my white belts, and I
+will accompany them as they grow as people and practitioners of jiu-jitsu.
+                                                   BLUE BELT
+      Aside from black belt, blue belt is probably the rank in which students will spend most of their time. This is
+because here they start to develop their own ways of doing things after they have learned the fundamentals of jiu-
+jitsu. Blue belts start to develop different games and options and they will test everything they see until they build
+their own game. Therefore, the blue belt is the belt of experimentation. Students will experiment with all kinds of
+guards and techniques until they see what works for them. These discoveries take considerable time, and this is why
+a blue belt is often one of the longest processes in jiu-jitsu.
+
+                                                 PURPLE BELT
+      The purple belt is the level where a student starts to refine his technique while mentoring others. As he reflects
+on his own journey as a blue belt, the purple belt assists lower ranking students by teaching them to avoid the pitfalls
+that he experienced. In this way, purple belts need contact with blue belts.
+      Meanwhile, brown belts will sharpen him, work on his speed, and push his defense. In this way, the brown belt
+will push a purple belt in a way that the blue cannot. It is a back and forth learning experience.
+      This is also the level where a student begins to get more access to black belts. A black belt can really challenge
+the purple belt, and the purple belt reminds the black belt of his time spent in the toughest stage of learning. From
+the beginning of the purple belt to the end, the student should be getting closer to the black belt level of knowledge.
+This knowledge is what I look for in my higher purple belts.
+      To become a brown belt, the purple belt must believe in his skill level. He doesn’t let the blue and white belts
+interfere with his confidence. Also, he must be respectful of his fellow students and have the ability to connect
+defense and offense. Once he has fulfilled this, he is ready for a brown belt.
+
+                                                 BROWN BELT
+     A brown belt is almost a black belt. A brown belt’s focus is on polishing the rough edges to tighten his game.
+This is the belt where helpful tips take a student to the next level. These tips are the only difference between brown
+and black belts. For a brown belt the important lessons sound like, “Move a little more to this side when you do
+this…” These small alterations will make all the difference in becoming a black belt. This is why it is important to
+have black belts around. They are veterans who have already been there and have seen everything students will see.
+
+                                 BELIEVING IN YOUR YOUR RANK
+      If you worry about the time and speed of your promotions, you lose yourself. Remember, before you are a blue,
+purple, or brown belt, you want to feel like one. You must feel that your skills are there. You cannot fool yourself.
+Attaining a belt is just proof that your teacher is connected with you. You will know when you deserve it. My role as
+an instructor is to be there to say, “It’s time.” But you should already realize this on your own.
+      Jiu-jitsu is not math, and promotion is not based on attendance or calendar dates. A regimented promotion
+schedule based on dates or attendance is the worst way to gauge development. Jiu-jitsu is more complex than this.
+      There is no sense in chasing a belt and getting it as fast as possible. Often, people do not see that black belt will
+be their longest belt. Remember, it doesn’t matter if you get it in four years or fifteen. Either way, you will have the
+rest of your life with a black belt around your waist. Building the black belt is what matters.
+
+                         THE BELT SYSTEM AS USED IN THIS BOOK
+     This book uses the belt system differently than other instructional manuals on jiu-jitsu. Although the belts
+should not be used dogmatically (of course there will be opportunities for white belts to use submissions) they are a
+frame of reference for the skills that you should absorb in each level of your jiu-jitsu journey. For example, the
+purple belt should understand the guard before moving on to the brown belt. If the student achieves the brown belt
+rank and does not know the guard, it will be much more difficult learning to pass! The purpose of this system is to
+create a solid foundation for the student and to promote technical growth and confidence. Therefore, the white belt
+will start in a position that he must become accustomed to – the bottom. On the other side of the scale, the black belt
+will be at the top of the food chain sharpening his top game submissions, just as he would in reality.
+
+                                  JIU-JITSU AND THE INDIVIDUAL
+     Jiu-jitsu is an individual sport where you need partners in order to progress. However, comparing yourself with
+your partners only hinders your experience. I’m going to treat you as an isolated individual. When I see you grapple,
+I am not impressed if you win or lose. What I want to see is your use of the fundamentals of jiu-jitsu. It does not
+matter how it ends. I do not care if you tap five times as long as you try to use technique.
+
+                               REACHING A HIGH LEVEL IN JIU-JITSU
+      Ego is the biggest hindrance in reaching a high level in jiu-jitsu. Often, it is difficult to compartmentalize your
+ego, especially when you have to perform in front of the class. It is natural to worry about how good you look, but to
+be good you cannot have that mentality. Don’t try to look good! It is not important that others are watching while
+you are failing. It only matters that you try.
+      Practice jiu-jitsu with a child-like mind. Have you ever considered why children have such an accelerated
+learning curve? Part of the reason is that they are more concerned with enjoyment than ego. Try to envelop yourself
+in a child’s naivety. Today, all the white belts will mount you. Tomorrow, everybody catches you in armbars. How
+often do you see a higher-ranked student allow a lower-ranked one to catch a submission? Few people do it and this
+all comes back to ego.
+
+                                  LEARNING OUTSIDE THE ACADEMY
+     Everything that is good for your body is good for the practice of jiu-jitsu. This includes surfing, hiking, a
+healthy diet, and a host of other activities. Besides keeping you nimble and strong, these activities can relax your
+mind and body, leaving you rejuvenated and ready for jiu-jitsu practice. You can sharpen skills with meditation,
+physical conditioning, and a stretching system. Ginnastica Natural, an exercise and stretching method that
+incorporates mechanics from, yoga and jiu-jitsu, is one way of doing this. Every Ginnastica Natural exercise can be
+done without a partner, which is a great way to learn jiu-jitsu’s many body movements. This allows you to develop
+sport specific conditioning and flexibility that go hand in hand with your technical development.
+     You can also boost your learning curve if you take the time to learn from various media sources such as books
+and videos. However, in the end you will have to train with a partner to commit the techniques to muscle memory.
+
+
+
+
+    Kettlebells are a great complement to jiu-jitsu.
+
+      As you train with an instructor, keep an open mind so that you are not dependant on that one instructor’s
+techniques and opinions. I tell my students not to be stuck to me! If I see somebody doing something interesting, I
+will introduce it to my students. Marcelo Garcia, Fernando “Terere” Augusto, Eduardo Telles, and Demian Maia all
+do particular things that make me wonder, “How did he do that?” I want all my students to learn from them and
+grow. It’s important to learn from more than one source because no one can have all the answers to everything. I
+don’t want to limit you to the weapons I have. As an instructor, I must try to expose you to all the weapons –
+everything!
+
+                                   COMPETITION AND JIU-JITSU
+      It is not necessary for every student of jiu-jitsu to enter into competitions. Some may do jiu-jitsu simply
+because they enjoy gaining the knowledge. Others perhaps dislike the limelight or just don’t want to compete in this
+particular sport. I love to do other sports, but I don’t have the desire to compete in those sports. Some people don’t
+like to compete because they don’t know how to deal with loss. If you win, you are happy, and if you lose, your
+world gets turned upside down. That is a problem. This fear of losing scares some people from competition.
+      Then there are those who live and die by competition, but fail to realize it is just a game. It is a game where you
+mix knowledge, strategy, timing, health, and attitude. Like any game, the best jiu-jitsu practitioner doesn’t always
+win. Take the World Championship for example. Thirty guys sweat blood in their training, and there is only one
+winner. What about the twenty-nine who worked so hard? Is the champion really better than all of them? It depends.
+Sometimes, the person with the best technique gets eliminated in the first round.
+      If you decide to compete, realize that competition is the art of dealing with pressure. Some people face pressure
+early in life and others not until much later, but in every case, where there is pressure there is competition. The
+student who doesn’t compete at the tournament is still competing if the pressure is there. Perhaps he even feels more
+pressure than one who does go to tournaments. He fights against himself. He competes against his feelings. He
+competes against his choices. This is the toughest opponent you can have – yourself. Ultimately the opponent you
+will face in the ring is you, because you cannot compete successfully if you do not address internal issues that will
+affect your performance. When competing, you will not even be able to think about overcoming your opponent if
+you are too worried about yourself. However, if you are comfortable with your preparation, you will have the
+confidence to perform. Becoming the champion is not about your opponent. It’s about you.
+      Finally, if you want to learn something about someone’s jiu-jitsu, you should learn it in the academy. Many
+people enter competition with hopes that it will be a fast track to getting better. However, the quality of training
+partners actually has a much greater impact on skill level than competition does. Though competition can be a part
+of training, it alone will not improve technique. Competition shows such a small part of any given competitor’s
+knowledge that it masks what he really knows. In the academy, you can see him for who he really is. You will see
+him relaxed and in the proper environment to exhibit his understanding of jiu-jitsu and educate you and others of its
+benefits. This is what will keep jiu-jitsu evolving. Competition will always be a window to show the world how
+professional the sport can be. But the growth of the sport over the coming generations will not be reliant on the
+competitive aspect.
+                                    The Goal of the White Belt:
+                                          SURVIVAL
+       “A warrior is tuned to survive, and he survives in the best of all possible ways.”
+                                                                                                      —Carlos Castaneda
+
+                            1-1 WHAT DOES IT MEAN TO SURVIVE?
+     Everyone has fears, and every beginning jiu-jitsu practitioner at every academy will be accompanied by those
+fears when first stepping onto the mats. It may be the nightmare of claustrophobia, pain, or suffocation. In each
+situation, the student defeats these fears by facing them over and over again. At any moment, the student can tap to
+signal an end to the fight and start again and give it another try, over time he gradually liberates himself from the
+cycle of fear. This is a natural process of mental conditioning and it is the law for every student. Through this
+evolution, the grappler not only overcomes fear but also the instinctive tendencies to fight and waste energy. In
+place of his fear he develops confidence, fortitude, and peace in stressful times. In other words, he liberates himself
+from insecurity.
+     Survival on a physical level is simply an extension of this mental conditioning. Although there are physical
+techniques that I will show you how to use for survival, you must also make sure to become accustomed to the
+nature of being physically attacked, and specifically to pressure and to the claustrophobic feeling of crushing weight.
+In this way you will be mentally prepared to relax and let yourself go into these trying situations. Therefore, survival
+will depend on the mental aspect of becoming comfortable while under duress as well as physical techniques.
+
+            1-2 SURVIVAL AS THE FOUNDATION OF GRACIE JIU-JITSU
+     It is important to realize that survival is the aspect that brings us closest to the founder of jiu-jitsu, Helio Gracie
+(See Case Study 1.0). Due to his smaller stature, Helio was forced to learn how to survive against much larger and
+stronger opponents. Realizing that he would not be able to out-muscle these opponents, Helio instead looked for
+ways to survive. He was aware that it took much less energy to thwart his opponents’ advances than it took to
+escape. His goal was simple, he may not win the fight, but he would not die. He would definitely survive.
+     The result of Helio’s adaptations was astonishing; by focusing on the use of leverage as a tool for survival,
+Helio Gracie evolved jiu-jitsu into an art that could benefit a smaller person in a fight against a much larger
+opponent.
+
+                                      1-3 SURVIVAL POSITIONING
+      I am going to tell you something that goes against the current dogma of jiu-jitsu instruction. Survival is not
+based on escaping submissions; it is about putting yourself into a position where you do not need to use muscle to
+protect yourself. If it were based solely on escaping the submission, then how could we expect Helio Gracie at 130
+pounds to be able to escape the tightest armlock or the deepest choke?
+      Survival is about assuming a position that impedes your opponent’s offense, eliminating the chance of his
+submission. It is about changing the situation to one that favors the defensive player. In doing so, you force your
+opponent out of his comfort area. As a result, all of his actions become predictable because as he fights for offense
+from an uncomfortable position there are only certain movements he can make.
+      Survival is not about escaping, but it becomes easier to escape when you can get to a stronger defensive
+position that forces your opponent into an awkward one.
+      Technically speaking, you have to master every defensive aspect of a position, for example, hiding your elbows
+for protection, getting to your side to create the proper angle, and, if necessary, preventing the cross face to inhibit
+being controlled. You also have to be able to execute them all at once. I cannot overstate the importance of this. If
+you fail to become comfortable doing all these things at once, you will be at the mercy of your opponent.
+      The key to mastering all these aspects is being able to feel what it is your opponent wants. Intuition is vital to
+your survival, and it will take a considerable amount of time to develop.
+      To return to the question: How could Helio, or anyone for that matter, escape the deepest choke? The answer is
+to first seek to avoid the position completely. Of course students need to train, learn submission defense, and get
+caught several times, and this will occur naturally throughout their involvement in jiu-jitsu, but they must also
+realize that the best defense is the one that avoids the danger altogether. For example, if I get stuck in a deep triangle
+position, the longer I remain caught, the less likely it is that I will escape. Even with the knowledge of many triangle
+escapes, I am still reacting to my opponent and this places him in control of the situation. In the end, my best
+defense may be to tap. This is why all students need to know how to use positioning to avoid the submission.
+
+                             1-4 SURVIVAL AND THE WHITE BELT
+       The theme of the white belt is survival, nothing more and nothing less. After all, this is what the white belt has
+to do from the first day of class. He is not going to arrive in class and beat the best. He has no one to whom he can
+compare himself because he is still an empty vessel. Although one often takes up jiu-jitsu to learn submissions, the
+first lesson for the beginner is survival. Before he moves on, the white belt must become a survivor.
+       Beyond this, the white belt is the level where I will first test a student’s insecurity and patience. There have
+been countless professionals who have walked into my academy beaming with confidence and strength, but when
+they were mounted by one of my white belts, they completely panicked. Everyone has to learn patience, starting at
+white belt. Eventually, by dealing with a superior power, students lose their insecurities and gains patience. This is a
+benefit to survival training that will last a lifetime.
+       Of course, I will give the white belt more weapons than just survival, but like the young man who goes to war,
+my first goal is for him to survive and come back to his family. He doesn’t have a lot of skill yet, but if he is smart
+and focuses on his defense and knowledge, he can survive.
+       The white belt process teaches patience in situations of having to tap or in holding off the opponent.
+Eventually, students arrive at a crossroad where I teach this key aspect: how to change the situation to prevent
+having to tap out.
+
+                                             Helpful Survival Tips
+   • Always close your elbows. An open elbow is a pathway for armbars, upper body control, and poor posture.
+   • Always prevent the cross-face control. If your opponent controls the direction of your head, he controls the
+   direction of your entire body.
+   • Never stay flat. A flat body is an immobile body.
+   • Don’t push. Pushing as a defense anchors you to your opponent and immobilizes your necessary hip
+   movement.
+   • Use your hips and body pendulum to generate power, not your hands. Your body is a much stronger weapon
+   than your arms alone.
+
+
+
+
+     Figure 1.0:
+Side Control Survival Positioning
+    Needless to say, it is imperative that the white belt learns to tap, tap early, and tap often. To tap simply means,
+“Okay you got me, let’s go again!” Every student should keep in mind that tapping is a positive part of the learning
+process; therefore, there is no reason to try with all their might to escape in the absence of proper technique.
+
+                              1-5 SURVIVAL AND THE UPPER BELT
+      Think back to that white belt that knows some survival. The longer he lasts, the more pressure he puts on the
+higher rank. This is great for the upper belt, because it forces him to move more and search for the tiniest hole in the
+white belt’s defensive shell. Also, the white belt is going to test the higher rank‘s accuracy because the senior
+student will often begin to rush through his movements as his foundation is disrupted by the white belt’s survival
+skills. Usually, this is the point where one should transition into an escape, but the white belt is still likely to remain
+in the survival position due to his inexperience and lack of transitioning skills. The upper belt will thus get to work
+his skills in adaptation and transition while being challenged to find new ways to submit the white belt without force
+or pure strength.
+      When an upper belt visits the academy, I have a different approach to teaching survival. Schools have various
+ways of receiving visitors. Sometimes, the instructor takes the biggest and best students and allows them to beat
+down the visitor to prove their own worth in the academy. I do not believe this is the right approach, and it says
+nothing about the students’ abilities to protect themselves.
+      In my school, I use the visit of an upper belt to test my students’ abilities to survive against somebody who
+doesn’t know about their survival skills. I want to see if they can make the visitor work really hard to find a hole to
+attack. In addition, I want to see if our special guest has patience and whether he is going to lose his temper or get
+rough with my white belts. Often enough, the visitor tries to destroy the white belt, especially when he becomes
+frustrated with the white belt’s defense. In this regard, I am truly happy if my white belt can just survive in the face
+of such an onslaught.
+      If the visitor becomes too rough with my students, I bring him to my world and show him what it means to
+survive. Now, he will have to survive against a veteran, and I will discover how his mind works when the tables are
+turned. Some upper belts make excuses or fake injuries and others accept their relative lack of survival skills.
+Regardless, the visiting upper belt, gives me the opportunity to watch him both when he is the hunter and the prey.
+In this way I can analyze his style to see if I want to continue to welcome this guest into the academy. If he shows
+kindness to the white belts, then I give him the red carpet.
+      Even when upper belts visit for private lessons, I instruct them in survival. My view is that I cannot change you
+or give you an entire new game in one private lesson, so I will focus on this most important area of jiu-jitsu. In all
+honesty, 99 percent of the people who come in seeking these lessons do not know how to survive. If they already
+understand survival, then I can go further and teach some escapes. Usually, they ask about fancy sweeps, and I tell
+them that this is the last thing they need. As an instructor, I will not waste my guest’s money on these techniques
+because his defense has got to be tight before he even considers fancy sweeps or the newest attacks. When these
+private lessons are over the student thanks me for showing him something that he should have learned in the
+beginning.
+
+                           1-6 SURVIVAL AND THE AGING PROCESS
+      For those that scoff at the idea that survival has to be the foundation of jiu-jitsu, look no further than your older
+students. Gone are the days of superior athleticism and endless endurance, so the emphasis has to be on defense. In
+this regard, as my students get older I don’t tell them that they will be beating younger students, but I state that
+younger students only using technique are going to have an incredibly difficult time finding space to attack. This is
+because I teach all my students to seal up their holes. Beating your opponent is about finding where he is exposed.
+When the younger student faces one of my aging students and finds that there are no holes, he has to get rough to
+open them. This is a great proof of the technique of the older student and shows why everyone should always strive
+to seal off holes in their defense. If you seal off all of them, you can defend against more athletic as well as stronger
+opponents, and age is no longer a determining factor.
+
+   Case Study 1.0:
+   Helio Gracie - The Ninety-Year Old Warrior
+    Photo: Saulo’s Personal Archive
+
+      The last time I trained with Helio Gracie was a truly memorable experience and is to this day the most
+important class I ever had on jiu-jitsu. What struck me most was how Helio addressed me. He did not hold me in
+awe for my titles or championships, and what he said more than surprised me. He said, “Son, you’re strong, you’re
+tough, you’re a world champion, but I don’t think you can beat me.” At the time, I just looked at him sideways in
+disbelief. After all, how could a ninety-year-old beat someone who is in his athletic prime? It was at this moment
+that I realized how he deftly put all the responsibility on me to defeat him. This is the key to Helio; he never says he
+will beat you, only that you will not beat him.
+      This is important because he believes he will survive. His survival has nothing to do with perfect timing or
+strength. Instead, it has everything to do with mastering the defensive aspects of jiu-jitsu. He didn’t say he would
+escape from my position, or that he would do anything else. He said he would survive.
+      The result of our training only validated that fact. Helio did survive, and I was not able to impose my game on
+him. Helio proved to me the importance of survivability and the defensive nature of jiu-jitsu. Furthermore, I took
+from him one of the greatest lessons ever: It is not enough to be able to defeat all of your challengers. To be able to
+tell any man that he cannot defeat you is to wield true power.
+
+                             1-7 CLOSING THOUGHTS ON SURVIVAL
+     Survival is a process that will continue to develop over a lifetime in jiu-jitsu and this is why it is not only the
+theme of the white belt, but also the theme of jiu-jitsu as a whole. Show me a world champion and time will show
+you someone who is put here to make him survive.
+Judoka Sensei Izumi practices an Uchimata.
+
