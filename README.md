@@ -2,6 +2,14 @@
 
 A modular React PWA built with Apple-style design principles.
 
+## Current Version (v0.1.0)
+This version allows users to browse the **Jiu-Jitsu University** book content (Steps and Misconceptions) organized due to belt levels.
+
+**Pending Features:**
+- Video integration.
+- Video Recording Module.
+- AI Analysis Module.
+
 ## Prerequisites
 
 - Node.js (v16+)
