@@ -475,40 +475,65 @@ const App: React.FC = () => {
   };
 
   const renderRecorder = () => (
-    <div className="relative h-full bg-black flex flex-col">
+    <div className="fixed inset-0 z-50 bg-black">
+      {/* Video Preview — Full screen, no opacity, like native camera */}
       <video
         ref={videoPreviewRef}
         autoPlay
         playsInline
         muted
-        className="flex-1 object-cover w-full h-full opacity-80"
+        className="absolute inset-0 w-full h-full object-cover"
       />
 
-      {/* HUD */}
-      <div className="absolute top-6 left-0 right-0 px-6 flex justify-between items-center z-10">
-        <button onClick={resetApp} className="p-2 rounded-full bg-black/40 backdrop-blur-md text-white">
-          <ChevronLeft />
+      {/* Recording Progress Bar (thin line at top like iOS camera) */}
+      {isRecording && (
+        <div className="absolute top-0 left-0 right-0 z-20 h-1 bg-black/20">
+          <div
+            className="h-full bg-red-500 transition-all duration-1000 ease-linear"
+            style={{ width: `${(recordingTime / MAX_DURATION_SEC) * 100}%` }}
+          />
+        </div>
+      )}
+
+      {/* Top HUD — safe area aware */}
+      <div
+        className="absolute top-0 left-0 right-0 z-10 px-4 pt-2 flex justify-between items-center"
+        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
+      >
+        <button
+          onClick={resetApp}
+          className="w-10 h-10 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center active:scale-90 transition-transform"
+        >
+          <ChevronLeft size={22} />
         </button>
-        <div className={`px-4 py-2 rounded-full backdrop-blur-md font-mono font-medium flex items-center gap-2 ${recordingTime > 35 ? 'bg-red-500/80 text-white' : 'bg-black/40 text-white'}`}>
-          <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-white'}`} />
+        <div className={`
+          px-4 py-2 rounded-full backdrop-blur-md font-mono text-sm font-semibold 
+          flex items-center gap-2 
+          ${recordingTime > 35 ? 'bg-red-500/90 text-white' : 'bg-black/40 text-white/90'}
+        `}>
+          <div className={`w-2 h-2 rounded-full ${isRecording ? 'bg-red-500 animate-pulse' : 'bg-white/70'}`} />
           00:{recordingTime.toString().padStart(2, '0')} / 00:{MAX_DURATION_SEC}
         </div>
       </div>
 
-      <div className="absolute bottom-12 left-0 right-0 flex justify-center items-center z-10">
+      {/* Bottom Controls — safe area aware */}
+      <div
+        className="absolute bottom-0 left-0 right-0 z-10 flex justify-center items-center pb-4"
+        style={{ paddingBottom: 'max(2rem, env(safe-area-inset-bottom))' }}
+      >
         {!isRecording ? (
           <button
             onClick={startRecording}
-            className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-90 transition-transform"
+            className="w-[72px] h-[72px] rounded-full border-[4px] border-white/90 flex items-center justify-center bg-transparent active:scale-90 transition-transform shadow-lg"
           >
-            <div className="w-16 h-16 rounded-full bg-red-500" />
+            <div className="w-[60px] h-[60px] rounded-full bg-red-500" />
           </button>
         ) : (
           <button
             onClick={stopRecording}
-            className="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-90 transition-transform"
+            className="w-[72px] h-[72px] rounded-full border-[4px] border-white/90 flex items-center justify-center bg-transparent active:scale-90 transition-transform shadow-lg"
           >
-            <div className="w-10 h-10 rounded-md bg-red-500" />
+            <div className="w-8 h-8 rounded-[6px] bg-red-500" />
           </button>
         )}
       </div>
@@ -870,11 +895,7 @@ const App: React.FC = () => {
           {renderHistory()}
         </div>
       )}
-      {view === 'record' && (
-        <div className="w-full h-full max-w-lg mx-auto bg-black">
-          {renderRecorder()}
-        </div>
-      )}
+      {view === 'record' && renderRecorder()}
       {view === 'preview' && (
         <div className="w-full h-full max-w-lg mx-auto">
           {renderPreview()}

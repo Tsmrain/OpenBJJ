@@ -1,45 +1,50 @@
 <!DOCTYPE html>
 <html lang="es">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/png" href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>Análisis OpenBJJ</title>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-      tailwind.config = {
-        theme: {
-          extend: {
-            fontFamily: {
-              sans: ['Inter', 'sans-serif'],
+
+<head>
+  <meta charset="UTF-8" />
+  <link rel="icon" type="image/png"
+    href="https://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Google_%22G%22_Logo.svg/512px-Google_%22G%22_Logo.svg.png" />
+  <meta name="viewport"
+    content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Análisis OpenBJJ</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.5s ease-out',
+            'fade-in-down': 'fadeInDown 0.5s ease-out',
+            'scale-up': 'scaleUp 0.3s ease-out',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
             },
-            animation: {
-              'fade-in': 'fadeIn 0.5s ease-out',
-              'fade-in-down': 'fadeInDown 0.5s ease-out',
-              'scale-up': 'scaleUp 0.3s ease-out',
+            fadeInDown: {
+              '0%': { opacity: '0', transform: 'translateY(-10px)' },
+              '100%': { opacity: '1', transform: 'translateY(0)' },
             },
-            keyframes: {
-              fadeIn: {
-                '0%': { opacity: '0' },
-                '100%': { opacity: '1' },
-              },
-              fadeInDown: {
-                '0%': { opacity: '0', transform: 'translateY(-10px)' },
-                '100%': { opacity: '1', transform: 'translateY(0)' },
-              },
-              scaleUp: {
-                '0%': { opacity: '0', transform: 'scale(0.95)' },
-                '100%': { opacity: '1', transform: 'scale(1)' },
-              }
+            scaleUp: {
+              '0%': { opacity: '0', transform: 'scale(0.95)' },
+              '100%': { opacity: '1', transform: 'scale(1)' },
             }
           }
         }
       }
-    </script>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/index.tsx"></script>
-  </body>
+    }
+  </script>
+</head>
+
+<body>
+  <div id="root"></div>
+  <script type="module" src="/index.tsx"></script>
+</body>
+
 </html>
