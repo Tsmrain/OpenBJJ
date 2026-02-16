@@ -1,87 +1,320 @@
-
 import { GoogleGenAI, Type } from "@google/genai";
 import { AnalysisResult } from "../types";
+import { MetricsService } from "./metricsService";
 
 // ═══════════════════════════════════════════════════════════════════
-// REFERENCIA BIBLIOGRÁFICA
+// BIBLIOGRAPHIC REFERENCE
 // Ribeiro, S. & Howell, K. (2008). Jiu-Jitsu University.
 // Victory Belt Publishing. ISBN: 978-0-9815044-2-9.
 // ═══════════════════════════════════════════════════════════════════
 const JIU_JITSU_UNIVERSITY_CONTEXT = `
-ROL: Actúa como Saulo Ribeiro, leyenda del BJJ y autor de "Jiu-Jitsu University" (Victory Belt Publishing, 2008, ISBN: 978-0-9815044-2-9), coautor Kevin Howell.
+ROLE: Saulo Ribeiro. Book: "Jiu-Jitsu University" (ISBN: 978-0-9815044-2-9).
+MINDSET: White=Survival, Blue=Escapes, Purple=Guard, Brown=Passing, Black=Subs.
 
-FILOSOFÍA (MENTALIDAD SAULO):
-1. SUPERVIVENCIA (White Belt): "Si piensas, llegas tarde. Si llegas tarde, usas fuerza. Si usas fuerza, te cansas. Si te cansas, mueres."
-2. ESCAPES (Blue Belt): El escape nace de la supervivencia. Usa la palanca, no la fuerza.
-3. GUARDIA (Purple Belt): La guardia son las caderas. Sin movimiento de cadera, no hay guardia.
-4. PASES DE GUARDIA (Brown Belt): Gravedad + Tú vs. Oponente.
-5. SUMISIONES (Black Belt): El camino final. Precisión quirúrgica.
+TOC (Reference these Section IDs EXACTLY):
 
-TABLA DE CONTENIDOS COMPLETA DEL LIBRO:
+[WHITE BELT - SURVIVAL]
+1.0 THE BACK
+1-0 THE BACK SURVIVAL POSITION
+1-1 HAND FIGHTING
+1-2 THE SCOOP
+1-3 COMMON MISCONCEPTIONS
+2.0 ALL-FOURS
+2-0 SURVIVING ALL-FOURS BACK POSITION
+2-1 SOLO ALL-FOURS SURVIVAL
+2-2 ALL-FOURS SURVIVAL DRILL
+2-3 ALL-FOURS DETAIL
+2-4 ROLLING TO BACK SURVIVAL
+2-5 COMMON MISCONCEPTIONS
+3.0 THE MOUNT
+3-0 SURVIVING THE MOUNT
+3-1 SOLO MOUNT SURVIVAL DRILL
+3-2 EARLY POSTURE
+3-3 NULLIFYING THE CHOKE
+3-4 ERROR IN CHOKE SURVIVAL
+3-5 SEATED MOUNT SURVIVAL
+3-6 COMMON MISCONCEPTIONS
+4.0 SIDE CONTROL
+4-0 SIDE CONTROL SURVIVAL
+4-1 BLOCKING THE CROSS-FACE
+4-2 RELEASING THE HAND
+4-3 KESA GATAME HAND FIGHTING
+4-4 REVERSE KESA GATAME
+4-5 COMMON MISCONCEPTIONS
+5.0 KNEE-ON-BELLY
+5-0 KNEE-ON-BELLY SURVIVAL
+5-1 SOLO KNEE-ON-BELLY PREVENTION
+5-2 STRAIGHT-LEGGED PREVENTION
+5-3 IMPORTANCE OF PREVENTION
+5-4 RUNNING SURVIVAL POSTURE
+5-5 EXPOSED ROLL
+5-6 COMMON MISCONCEPTIONS
+6.0 THE BACK
+6-0 ESCAPING THE BACK
+6-1 COMMON MISTAKE
+6-2 BODY LOCK ESCAPE
+6-3 ESCAPING DOUBLE-UNDERHOOK CONTROL
+6-4 ESCAPING ALL-FOURS DRILL
 
-CAPÍTULO: SURVIVAL (White Belt)
-1.0 THE BACK: 1-0 Back Survival Position, 1-1 Hand Fighting, 1-2 The Scoop, 1-3 Common Misconceptions
-2.0 ALL-FOURS: 2-0 Surviving All-Fours Back Position, 2-1 Solo All-Fours Survival, 2-2 All-Fours Survival Drill, 2-3 All-Fours Detail, 2-4 Rolling to Back Survival, 2-5 Common Misconceptions
-3.0 THE MOUNT: 3-0 Surviving the Mount, 3-1 Solo Mount Survival Drill, 3-2 Early Posture, 3-3 Nullifying the Choke, 3-4 Error in Choke Survival, 3-5 Seated Mount Survival, 3-6 Common Misconceptions
-4.0 SIDE CONTROL: 4-0 Side Control Survival, 4-1 Blocking the Cross-Face, 4-2 Releasing the Hand, 4-3 Kesa Gatame Hand Fighting, 4-4 Reverse Kesa Gatame, 4-5 Common Misconceptions
-5.0 KNEE-ON-BELLY: 5-0 Knee-on-Belly Survival, 5-1 Solo Knee-on-Belly Prevention, 5-2 Straight-Legged Prevention, 5-3 Importance of Prevention, 5-4 Running Survival Posture, 5-5 Exposed Roll, 5-6 Common Misconceptions
-6.0 THE BACK (Escapes): 6-0 Escaping the Back, 6-1 Common Mistake, 6-2 Body Lock Escape, 6-3 Escaping Double-Underhook Control, 6-4 Escaping All-Fours Drill
+[BLUE BELT - ESCAPES]
+7.0 THE MOUNT
+7-0 SOLO MOUNT ELBOW ESCAPE DRILL
+7-1 MOUNT ELBOW ESCAPE
+7-2 SEATED MOUNT ESCAPE
+8.0 SIDE CONTROL
+8-0 SOLO SIDE CONTROL DRILLS
+8-1 SIDE CONTROL TO GUARD RECOVERY
+8-2 SIDE CONTROL ESCAPE TO THE KNEES
+8-3 SIDE CONTROL RUNNING ESCAPE
+8-4 ESCAPE FROM KESA GATAME
+8-5 ESCAPE FROM REVERSE KESA GATAME
+8-6 ESCAPE AGAINST WRESTLER’S PIN
+9.0 KNEE-ON-BELLY
+9-0 KNEE-ON-BELLY RUNNING ESCAPE
+10.0 ARMBAR
+10-0 ARMBAR ESCAPE MOVEMENT DRILL
+10-1 COMMON MISCONCEPTIONS
+10-2 ARMBAR ESCAPE TO GUARD PASS
+10-3 ARMBAR ESCAPE TO GUARD PASS 2
+10-4 ARMBAR ESCAPE FROM BOTTOM
+11.0 TRIANGLE
+11-0 TRIANGLE ESCAPE TO PASS
+11-1 COMMON MISCONCEPTIONS
+12.0 GUILLOTINE
+12-0 CLASSIC GUILLOTINE ESCAPE
+12-1 ARM-IN GUILLOTINE ESCAPE
+13.0 FOOTLOCK
+13-0 SOLO FOOTLOCK ESCAPE DRILL
+13-1 FOOTLOCK ESCAPE FROM GUARD
+14.0 KIMURA
+14-0 KIMURA ESCAPE FROM HALF GUARD
+14-1 KIMURA ESCAPE TO ARMBAR POSTURE
 
-CAPÍTULO: ESCAPES (Blue Belt)
-7.0 THE MOUNT: 7-0 Solo Mount Elbow Escape Drill, 7-1 Mount Elbow Escape, 7-2 Seated Mount Escape
-8.0 SIDE CONTROL: 8-0 Solo Side Control Drills, 8-1 Side Control to Guard Recovery, 8-2 Side Control Escape to the Knees, 8-3 Side Control Running Escape, 8-4 Escape from Kesa Gatame, 8-5 Escape from Reverse Kesa Gatame, 8-6 Escape Against Wrestler's Pin
-9.0 KNEE-ON-BELLY: 9-0 Knee-on-Belly Running Escape
-10.0 ARMBAR: 10-0 Armbar Escape Movement Drill, 10-1 Common Misconceptions, 10-2 Armbar Escape to Guard Pass, 10-3 Armbar Escape to Guard Pass 2, 10-4 Armbar Escape from Bottom
-11.0 TRIANGLE: 11-0 Triangle Escape to Pass, 11-1 Common Misconceptions
-12.0 GUILLOTINE: 12-0 Classic Guillotine Escape, 12-1 Arm-in Guillotine Escape
-13.0 FOOTLOCK: 13-0 Solo Footlock Escape Drill, 13-1 Footlock Escape from Guard
-14.0 KIMURA: 14-0 Kimura Escape from Half Guard, 14-1 Kimura Escape to Armbar Posture
+[PURPLE BELT - THE GUARD]
+A. CLOSED GUARD AGAINST KNEELING OPPONENT
+15-0 CLOSED GUARD ARM WRAP
+15-1 SOLO ARM WRAP CHOKE TO STRAIGHT ARMLOCK
+15-2 ARM WRAP CHOKE TO STRAIGHT ARMLOCK
+15-3 CLOSED GUARD OVERWRAP
+15-4 OVERWRAP TO BACK
+15-5 SCISSOR / KNEE SHIELD
+15-6 CLASSIC ARMBAR
+15-7 ARMBAR TO CROSS CHOKE DRILL
+15-8 BRABO CHOKE
+15-9 CLASSIC TRIANGLE CHOKE
+15-10 SOLO HIP BUMP SWEEP
+15-11 HIP BUMP SWEEP
+15-12 FLOWER SWEEP
+B. CLOSED GUARD AGAINST STANDING OPPONENT
+16-0 FRUSTRATING STANDING BASE
+16-1 HIP PUSH SWEEP
+16-2 CLASSIC UNDERHOOK SWEEP
+16-3 ROLLOUT AGAINST UNDERHOOK DEFENSE
+16-4 COMMON MISCONCEPTIONS
+17.0 GUARD PASS DEFENSE
+A. UNDER-THE-LEG PASS DEFENSE
+17-1 SINGLE UNDER-THE-LEG PASS DEFENSE
+17-2 DOUBLE UNDER-THE-LEGS DEFENSE TO SWEEP
+B. OVER-THE-LEGS PASS DEFENSE
+17-3 LEG-SQUEEZE DEFENSE
+17-4 FAILED LEG-SQUEEZE DEFENSE
+17-5 OVER-AND-UNDER SMASH DEFENSE
+17-6 FAILED OVER-AND-UNDER SMASH DEFENSE
+17-7 SAME-SIDE KNEE BLOCK
+17-8 FAILED SAME-SIDE KNEE BLOCK
+17-9 KNEE-SLIDE BLOCK
+17-10 EARLY TORREANDO GRIP BREAK
+17-11 COLLAR DRAG OFF TORREANDO DEFENSE
+17-12 ANKLE PICK OFF TORREANDO DEFENSE
+17-13 LATE TORREANDO BLOCK
+17-14 TWO-HANDED TORREANDO BLOCK
+17-15 STRAIGHT ARMLOCK
+17-16 OMOPLATA OFF STRAIGHT ARMLOCK
+18-0 BUTTERFLY GUARD
+18-1 CONTROL AND DISTANCE
+18-2 CONTROL AND MOVEMENT
+18-3 SOLO BUTTERFLY SWEEP
+18-4 CLASSIC BUTTERFLY SWEEP
+18-5 FAILED BUTTERFLY SWEEP
+18-6 WING SWEEP
+18-7 STRAIGHT ARMLOCK DRILL
+18-8 CLASSIC CROSS-CHOKE
+18-9 PALM UP-PALM DOWN CHOKE
+19-0 SPIDER GUARD
+19-1 CONTROL AND MOVEMENT
+19-2 FAILED CONTROL AND MOVEMENT
+19-3 SWEEP OFF A PASS
+20-0 CROSS-GRIP GUARD
+20-1 POSTURE
+20-2 FAILED POSTURE
+20-3 CLASSIC TRIPOD SWEEP
+20-4 CROSS-GRIP BACKROLL SWEEP
+21-0 DE LA RIVA
+21-1 STARTING POSITION
+21-2 POSTURE BLOCKED
+21-3 ROLLOVER SWEEP
+21-4 DE LA RIVA TO TOMOE-NAGE SWEEP
+22-0 SIT-UP GUARD
+22-1 POSTURE DRILL
+22-2 SIT-UP GUARD TO CLASSIC SWEEP
+22-3 REVERSE ROLL SWEEP
+22-4 FAILED REVERSE ROLL SWEEP
+23-0 REVERSE DE LA RIVA GUARD
+23-1 POSITIONING
+23-2 REVERSE DE LA RIVA DRILL
+23-3 FAILED POSITIONING
+23-4 KNEE PUSH SWEEP
+24-0 HALF GUARD
+24-1 REGAINING GUARD OR CONTROL
+24-2 IMPROPER CONTROL
+24-3 DEEP CONTROL
+24-4 GETTING EVEN DEEPER
+24-5 BACKDOOR TO BACK
+24-6 BOTTOM ARMLOCK - KIMURA
+24-7 INCORRECT KIMURA
 
-CAPÍTULO: THE GUARD (Purple Belt)
-A. CLOSED GUARD VS KNEELING: 15-0 Closed Guard Arm Wrap, 15-1 Solo Arm Wrap Choke to Straight Armlock, 15-2 Arm Wrap Choke to Straight Armlock, 15-3 Closed Guard Overwrap, 15-4 Overwrap to Back, 15-5 Scissor/Knee Shield, 15-6 Classic Armbar, 15-7 Armbar to Cross Choke Drill, 15-8 Brabo Choke, 15-9 Classic Triangle Choke, 15-10 Solo Hip Bump Sweep, 15-11 Hip Bump Sweep, 15-12 Flower Sweep
-B. CLOSED GUARD VS STANDING: 16-0 Frustrating Standing Base, 16-1 Hip Push Sweep, 16-2 Classic Underhook Sweep, 16-3 Rollout Against Underhook Defense, 16-4 Common Misconceptions
-17.0 GUARD PASS DEFENSE:
-  A. Under-the-Leg: 17-1 Single Under-the-Leg Pass Defense, 17-2 Double Under-the-Legs Defense to Sweep
-  B. Over-the-Legs: 17-3 Leg-Squeeze Defense, 17-4 Failed Leg-Squeeze, 17-5 Over-and-Under Smash Defense, 17-6 Failed Over-and-Under, 17-7 Same-Side Knee Block, 17-8 Failed Same-Side Knee Block, 17-9 Knee-Slide Block, 17-10 Early Torreando Grip Break, 17-11 Collar Drag off Torreando, 17-12 Ankle Pick off Torreando, 17-13 Late Torreando Block, 17-14 Two-Handed Torreando Block, 17-15 Straight Armlock, 17-16 Omoplata off Straight Armlock
-18.0 BUTTERFLY GUARD: 18-0 Butterfly Guard, 18-1 Control and Distance, 18-2 Control and Movement, 18-3 Solo Butterfly Sweep, 18-4 Classic Butterfly Sweep, 18-5 Failed Butterfly Sweep, 18-6 Wing Sweep, 18-7 Straight Armlock Drill, 18-8 Classic Cross-Choke, 18-9 Palm Up-Palm Down Choke
-19.0 SPIDER GUARD: 19-0 Spider Guard, 19-1 Control and Movement, 19-2 Failed Control and Movement, 19-3 Sweep off a Pass
-20.0 CROSS-GRIP GUARD: 20-0 Cross-Grip Guard, 20-1 Posture, 20-2 Failed Posture, 20-3 Classic Tripod Sweep, 20-4 Cross-Grip Backroll Sweep
-21.0 DE LA RIVA: 21-0 De La Riva, 21-1 Starting Position, 21-2 Posture Blocked, 21-3 Rollover Sweep, 21-4 De La Riva to Tomoe-Nage Sweep
-22.0 SIT-UP GUARD: 22-0 Sit-Up Guard, 22-1 Posture Drill, 22-2 Sit-Up Guard to Classic Sweep, 22-3 Reverse Roll Sweep, 22-4 Failed Reverse Roll Sweep
-23.0 REVERSE DE LA RIVA: 23-0 Reverse De La Riva Guard, 23-1 Positioning, 23-2 Reverse De La Riva Drill, 23-3 Failed Positioning, 23-4 Knee Push Sweep
-24.0 HALF GUARD: 24-0 Half Guard, 24-1 Regaining Guard or Control, 24-2 Improper Control, 24-3 Deep Control, 24-4 Getting Even Deeper, 24-5 Backdoor to Back, 24-6 Bottom Armlock - Kimura, 24-7 Incorrect Kimura
+[BROWN BELT - PASSING]
+A. PASSING THE CLOSED GUARD FROM THE KNEES
+25-0 BLOCKING THE COLLAR GRIP
+25-1 DEFEATING THE CROSS-COLLAR GRIP
+25-2 OVERHOOK GUARD ESCAPE
+25-3 ESCAPING OVER-THE-SHOULDER BELT GRIP
+25-4 CLASSIC OPENING ON THE KNEES
+25-5 BLOCKING THE TRIANGLE
+25-6 FAILED TRIANGLE BLOCK
+25-7 OPENING WHEN OPPONENT HIDES BOTH ARMS
+25-8 BASIC SINGLE UNDERHOOK OPENING
+25-9 BASIC UNDERHOOK PASS
+25-10 BEATING THE BLOCKED HIP
+25-11 BASIC UNDERHOOK PASS VARIATION
+25-12 DOUBLE UNDERHOOK PASS
+25-13 DOUBLE UNDERHOOK PASS VARIATION
+25-14 COMBAT BASE TO BASIC PASS
+B. PASSING THE GUARD FROM STANDING
+25-15 BASE WARM-UP
+25-16 STANDING CORRECTLY VS. INCORRECTLY
+25-17 STANDING OPENING WITH HIP PRESSURE
+25-18 DEFENSIVE SQUATTING & STANDING OPEN
+25-19 OPEN WHEN OPPONENT HIDES ONE ARM
+25-20 OPEN AGAINST LONG LEGS
+25-21 ARMPIT GRIP OPENING & BRIDGE DEFEATING
+25-22 OPENING AGAINST DOUBLE UNDERHOOKS
+26-0 CORE OPEN GUARD PASSES
+26-1 LEG ROPE FRONT
+26-2 LEG ROPE BACK
+26-3 LEG ROPE SIDE SWITCH & SMASH
+26-4 KNEE CROSS PASS
+26-5 KNEE CROSS AGAINST LAPEL GRIP
+26-6 ANGLE CHANGE TO KNEE PASS
+26-7 TORREANDO & APPROACH
+26-8 TORREANDO AGAINST ONE HOOK
+26-9 TORREANDO W/ HIP CONTROL DRILL
+26-11 TWO-ON-ONE LEG PASS
+27-0 BUTTERFLY GUARD PASSES
+27-1 POSTURE & BALANCE
+27-2 FLAT BUTTERFLY–WALK-AROUND PASS
+27-3 WALLID ISMAEL VARIATION
+27-4 WRAP-THE-LEGS PASS
+27-5 HAND PLANT PASS
+27-6 LEVEL CHANGE PASS
+27-7 FORWARD KNEE-PRESS PASS
+27-8 PASSING THE CROSS-GRIP
+27-9 FLOATING HIP-SWITCH PASS
+27-10 FLOATING HIP-SWITCH AGAINST PANT GRAB
+27-11 THE STAR PASS
+27-12 TRANSITION TO MOUNT OFF PASS
+27-13 STAND-UP WHEEL PASS
+27-14 X PASS
+27-15 SHIN-TO-SHIN PASS
+28-0 SPIDER GUARD PASSES
+28-1 BREAK & PASS
+28-2 LEG LASSO PASS
+29-0 CROSS GRIP PASSES
+29-1 SAME SIDE PASS
+30-0 DE LA RIVA PASSES
+30-1 UNLOCK & PASS
+30-2 HOOK ESCAPE PASS
+30-3 PASSING THE DEEP DE LA RIVA
+31-0 SIT-UP GUARD
+31-1 STEP-AROUND PASS
+31-2 UNDERHOOK TO MOUNT
+31-3 UNDERHOOK TO KNEE-UP-THE-MIDDLE VARIATION
+32-0 REVERSE DE LA RIVA PASSES
+32-1 HIP SMASH
+32-2 FLOATING PASS
+33-0 INVERTED GUARD PASSES
+33-1 HIP PASS
+33-2 DANGER OF CIRCLING
+34-0 PASSING THE X-GUARD
+34-1 BALANCE BALL BREAK & PASS
+34-2 BREAK & PASS
+35-0 HALF GUARD PASSES
+35-1 FLATTENING THE OPPONENT
+35-2 STRAIGHT LEG PASS WITH KNEE BLOCK
+35-3 BASE-SWITCH PASS WITH SHIN
+35-4 BLOCKED ARM PASS
+35-5 XANDE’S FLATTENING PASS
+35-6 SHIN SLIDE PASS
+35-7 ESGRIMA PASS
+35-8 ESGRIMA MOUNT
+35-9 FREDSON ALVES’ ESGRIMA PASS
+35-10 WHIZZER ARMBAR FEINT PASS
+35-11 THE OPPOSITE SIDE PASS
+35-12 OPPOSITE PASS AGAINST UNDERHOOK
+35-13 OPPOSITE-SIDE PASS TO MOUNT
+35-14 HALF MOUNT PASS
+35-15 HALF MOUNT TO KNEE CROSS
+35-16 DEEP HALF—LEG PULLOUT
+35-17 HALF BUTTERFLY HIP-SWITCH
+35-18 OPEN HALF GUARD HIP-DRIVE PASS
+35-19 OPEN HALF GUARD LEMON SQUEEZE PASS
 
-CAPÍTULO: GUARD PASSING (Brown Belt)
-A. PASSING CLOSED GUARD FROM KNEES: 25-0 Blocking the Collar Grip, 25-1 Defeating the Cross-Collar Grip, 25-2 Overhook Guard Escape, 25-3 Escaping Over-the-Shoulder Belt Grip, 25-4 Classic Opening on the Knees, 25-5 Blocking the Triangle, 25-6 Failed Triangle Block, 25-7 Opening When Opponent Hides Both Arms, 25-8 Basic Single Underhook Opening, 25-9 Basic Underhook Pass, 25-10 Beating the Blocked Hip, 25-11 Basic Underhook Pass Variation, 25-12 Double Underhook Pass, 25-13 Double Underhook Pass Variation, 25-14 Combat Base to Basic Pass
-B. PASSING FROM STANDING: 25-15 Base Warm-Up, 25-16 Standing Correctly vs Incorrectly, 25-17 Standing Opening with Hip Pressure, 25-18 Defensive Squatting & Standing Open, 25-19 Open When Opponent Hides One Arm, 25-20 Open Against Long Legs, 25-21 Armpit Grip Opening & Bridge Defeating, 25-22 Opening Against Double Underhooks
-26.0 CORE OPEN GUARD PASSES: 26-1 Leg Rope Front, 26-2 Leg Rope Back, 26-3 Leg Rope Side Switch & Smash, 26-4 Knee Cross Pass, 26-5 Knee Cross Against Lapel Grip, 26-6 Angle Change to Knee Pass, 26-7 Torreando & Approach, 26-8 Torreando Against One Hook, 26-9 Torreando w/ Hip Control Drill, 26-11 Two-on-One Leg Pass
-27.0 BUTTERFLY GUARD PASSES: 27-1 Posture & Balance, 27-2 Flat Butterfly Walk-Around Pass, 27-3 Wallid Ismael Variation, 27-4 Wrap-the-Legs Pass, 27-5 Hand Plant Pass, 27-6 Level Change Pass, 27-7 Forward Knee-Press Pass, 27-8 Passing the Cross-Grip, 27-9 Floating Hip-Switch Pass, 27-10 Floating Hip-Switch Against Pant Grab, 27-11 The Star Pass, 27-12 Transition to Mount off Pass, 27-13 Stand-Up Wheel Pass, 27-14 X Pass, 27-15 Shin-to-Shin Pass
-28.0 SPIDER GUARD PASSES: 28-1 Break & Pass, 28-2 Leg Lasso Pass
-29.0 CROSS GRIP PASSES: 29-1 Same Side Pass
-30.0 DE LA RIVA PASSES: 30-1 Unlock & Pass, 30-2 Hook Escape Pass, 30-3 Passing the Deep De La Riva
-31.0 SIT-UP GUARD PASSES: 31-1 Step-Around Pass, 31-2 Underhook to Mount, 31-3 Underhook to Knee-Up-the-Middle Variation
-32.0 REVERSE DE LA RIVA PASSES: 32-1 Hip Smash, 32-2 Floating Pass
-33.0 INVERTED GUARD PASSES: 33-1 Hip Pass, 33-2 Danger of Circling
-34.0 PASSING THE X-GUARD: 34-1 Balance Ball Break & Pass, 34-2 Break & Pass
-35.0 HALF GUARD PASSES: 35-1 Flattening the Opponent, 35-2 Straight Leg Pass with Knee Block, 35-3 Base-Switch Pass with Shin, 35-4 Blocked Arm Pass, 35-5 Xande's Flattening Pass, 35-6 Shin Slide Pass, 35-7 Esgrima Pass, 35-8 Esgrima Mount, 35-9 Fredson Alves' Esgrima Pass, 35-10 Whizzer Armbar Feint Pass, 35-11 The Opposite Side Pass, 35-12 Opposite Pass Against Underhook, 35-13 Opposite-Side Pass to Mount, 35-14 Half Mount Pass, 35-15 Half Mount to Knee Cross, 35-16 Deep Half—Leg Pullout, 35-17 Half Butterfly Hip-Switch, 35-18 Open Half Guard Hip-Drive Pass, 35-19 Open Half Guard Lemon Squeeze Pass
+[BLACK BELT - SUBMISSIONS]
+36-0 THE BACK
+36-1 GETTING THE COLLAR: BOW & ARROW CHOKE
+36-2 ARMBAR AGAINST CHOKE DEFENSE
+36-3 ARM & COLLAR CHOKE
+36-4 EZEQUIEL CHOKE FROM THE BACK
+37-0 THE MOUNT
+37-1 THE AMERICANA
+37-2 MOUNTED ARMBAR
+37-3 EZEQUIEL
+37-4 KATA GATAME
+37-5 PALM UP/PALM DOWN CHOKE
+37-6 PALM UP/PALM UP CHOKE
+37-7 TRIANGLE CHOKE
+37-8 S-MOUNT CROSS CHOKE
+37-9 S-MOUNT ARMBAR
+37-10 KATA GATAME TO EZEQUIEL
+37-11 COLLAR CHOKE DRILL
+38-0 SIDE CONTROL
+38-1 KIMURA
+38-2 WALK-AROUND ARMBAR
+38-3 ROYLER’S ARMBAR
+38-4 SPINNING ARMBAR
+38-5 FAILED SPINNING ARMBAR
+38-6 SPINNING ARMBAR TO KIMURA
+38-7 STEP-OVER CHOKE
+38-8 BREAD CUTTER CHOKE
+38-9 BASEBALL CHOKE
+39-0 TURTLE TOP
+39-1 CLOCK CHOKE
+40-0 HALF GUARD
+40-1 BRABO CHOKE
+40-2 BRABO TO STRAIGHT ARMLOCK
+41-0 GUARD TOP
+41-1 STRAIGHT ANKLE LOCK
 
-CAPÍTULO: SUBMISSIONS (Black Belt)
-36.0 THE BACK: 36-1 Getting the Collar: Bow & Arrow Choke, 36-2 Armbar Against Choke Defense, 36-3 Arm & Collar Choke, 36-4 Ezequiel Choke from the Back
-37.0 THE MOUNT: 37-1 The Americana, 37-2 Mounted Armbar, 37-3 Ezequiel, 37-4 Kata Gatame, 37-5 Palm Up/Palm Down Choke, 37-6 Palm Up/Palm Up Choke, 37-7 Triangle Choke, 37-8 S-Mount Cross Choke, 37-9 S-Mount Armbar, 37-10 Kata Gatame to Ezequiel, 37-11 Collar Choke Drill
-38.0 SIDE CONTROL: 38-1 Kimura, 38-2 Walk-Around Armbar, 38-3 Royler's Armbar, 38-4 Spinning Armbar, 38-5 Failed Spinning Armbar, 38-6 Spinning Armbar to Kimura, 38-7 Step-Over Choke, 38-8 Bread Cutter Choke, 38-9 Baseball Choke
-39.0 TURTLE TOP: 39-1 Clock Choke
-40.0 HALF GUARD: 40-1 Brabo Choke, 40-2 Brabo to Straight Armlock
-41.0 GUARD TOP: 41-1 Straight Ankle Lock
-
-TU OBJETIVO:
-Analizar una secuencia de imágenes de un sparring (rolling) y diagnosticar la técnica. Sé directo, duro pero educativo, como un coach campeón mundial. Referencia SIEMPRE la sección exacta del libro (número de sección, nombre de técnica) en tus respuestas.
+TASK: Identify technique. Compare mechanics vs Saulo's book logic. 
+Tips: Concise (Max 3).
+Reference: STRICT JSON format.
 `;
 
 /**
- * Extrae frames del video en el navegador para evitar subir el archivo pesado.
- * Esto reduce el tiempo de inferencia de minutos a segundos.
+ * Extracts frames from the video in the browser to avoid full video upload.
+ * OPTIMIZATION: Reduced to 9 frames to save ~25% tokens while maintaining temporal coverage.
  */
-const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 12): Promise<string[]> => {
+const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 9): Promise<string[]> => {
   const video = document.createElement('video');
   const canvas = document.createElement('canvas');
   const ctx = canvas.getContext('2d');
@@ -92,7 +325,7 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 12): 
   video.muted = true;
   video.playsInline = true;
 
-  // Esperar a que cargue la metadata para saber la duración
+  // Wait for metadata to load to know duration
   await new Promise((resolve) => {
     video.onloadedmetadata = () => resolve(true);
   });
@@ -100,7 +333,8 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 12): 
   const duration = video.duration;
   const interval = duration / numFrames;
 
-  const scale = Math.min(512 / video.videoWidth, 1);
+  // Max 360px is optimal for 'Flash' models (balance of detail vs token cost)
+  const scale = Math.min(360 / video.videoWidth, 1);
   canvas.width = video.videoWidth * scale;
   canvas.height = video.videoHeight * scale;
 
@@ -114,7 +348,8 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 12): 
 
     if (ctx) {
       ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-      const base64 = canvas.toDataURL('image/jpeg', 0.5).split(',')[1]; // Lower quality slightly for speed
+      // Quality 0.4 - Sufficient for pose detection, saves bandwidth
+      const base64 = canvas.toDataURL('image/jpeg', 0.4).split(',')[1];
       frames.push(base64);
     }
   }
@@ -124,14 +359,14 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 12): 
 };
 
 export const analyzeBJJVideo = async (videoBlob: Blob): Promise<AnalysisResult> => {
-  // Inicialización del cliente usando la variable de entorno
+  // Client initialization using env var
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
   try {
-    // 1. Extraemos frames (Optimizado para latencia: 512px)
-    const frames = await extractFramesFromVideo(videoBlob, 12);
+    // 1. Extract Frames (9 frames, 512px)
+    const frames = await extractFramesFromVideo(videoBlob, 9);
 
-    // 2. Construimos el contenido multimodal
+    // 2. Build Multimodal Content
     const promptParts = [
       ...frames.map(frameData => ({
         inlineData: {
@@ -140,83 +375,148 @@ export const analyzeBJJVideo = async (videoBlob: Blob): Promise<AnalysisResult> 
         }
       })),
       {
-        text: `Analiza esta secuencia de video frames.
-        CONTEXTO: ${JIU_JITSU_UNIVERSITY_CONTEXT}
-        TAREA: Identifica luchadores, técnica, y evalúa biomecánica vs conceptos de Saulo.
-        Responde SOLO en JSON.`
+        text: `Analyze this BJJ sparring video. There are EXACTLY 2 fighters.
+
+INSTRUCTIONS:
+1. Identify each fighter by visual cues (gi color, position: top/bottom, etc.).
+2. Return a "fighters" array with EXACTLY 2 objects — one per fighter.
+3. For EACH fighter, provide:
+   - "role": Descriptive label (e.g. "Top Fighter (White Gi)", "Bottom Fighter (Blue Gi)")
+   - "status": "approved" if technique is correct, "correction_needed" if flawed
+   - "summary": 1-2 sentence analysis of what this fighter is doing
+   - "techniques": Array of techniques observed (max 3)
+   - "mistakes": Array of biomechanical errors (max 3, empty if none)
+   - "tips": Array of improvement tips from Saulo Ribeiro's methodology (max 3)
+   - "reference": Object with "book", "technique" (exact Section ID + Name from TOC), "belt" (belt level), "quote" (key concept from the book)
+   - "youtube_query": Optimized YouTube search query for this fighter's technique (e.g. "BJJ mount escape elbow technique tutorial")
+
+IMPORTANT: Each fighter gets their OWN independent analysis, reference, and youtube_query.
+Respond ONLY in valid JSON.`
       }
     ];
+    // 3. MODEL INFERENCE WITH RETRY & FALLBACK
+    // User requested 'gemini-3-flash-preview' as primary.
+    const modelsToTry = ['gemini-3-flash-preview', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    let lastError: any;
 
-    // 3. MODELO: 'gemini-2.0-flash' (Solicitado explícitamente y probado por usuario)
-    const response = await ai.models.generateContent({
-      model: 'gemini-2.0-flash',
-      contents: {
-        parts: promptParts,
-        role: 'user'
-      },
-      config: {
-        temperature: 0.1,
-        // Eliminamos googleSearch para reducir latencia (1-3s de ahorro)
-        // tools: [{ googleSearch: {} }], 
-        responseMimeType: "application/json",
-        responseSchema: {
-          type: Type.OBJECT,
-          properties: {
-            fighters: {
-              type: Type.ARRAY,
-              items: {
+    for (const modelName of modelsToTry) {
+      let attempts = 0;
+      const maxAttempts = 3;
+
+      while (attempts < maxAttempts) {
+        try {
+          console.log(`🤖 Predicting with ${modelName} (Attempt ${attempts + 1}/${maxAttempts})...`);
+
+          const startTime = performance.now();
+          const response = await ai.models.generateContent({
+            model: modelName,
+            contents: {
+              parts: promptParts,
+              role: 'user'
+            },
+            config: {
+              systemInstruction: {
+                parts: [{ text: JIU_JITSU_UNIVERSITY_CONTEXT }]
+              },
+              temperature: 0.1,
+              responseMimeType: "application/json",
+              responseSchema: {
                 type: Type.OBJECT,
                 properties: {
-                  role: { type: Type.STRING },
-                  status: { type: Type.STRING, enum: ["approved", "correction_needed"] },
-                  summary: { type: Type.STRING },
-                  techniques: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  mistakes: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  tips: { type: Type.ARRAY, items: { type: Type.STRING } },
-                  reference: {
-                    type: Type.OBJECT,
-                    properties: {
-                      book: { type: Type.STRING },
-                      chapter: { type: Type.STRING },
-                      page: { type: Type.STRING },
-                      quote: { type: Type.STRING }
-                    },
-                    required: ["book", "chapter", "page", "quote"]
-                  },
-                  youtube_query: { type: Type.STRING }
+                  fighters: {
+                    type: Type.ARRAY,
+                    items: {
+                      type: Type.OBJECT,
+                      properties: {
+                        role: { type: Type.STRING },
+                        status: { type: Type.STRING, enum: ["approved", "correction_needed"] },
+                        summary: { type: Type.STRING },
+                        techniques: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        mistakes: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        tips: { type: Type.ARRAY, items: { type: Type.STRING } },
+                        reference: {
+                          type: Type.OBJECT,
+                          properties: {
+                            book: { type: Type.STRING },
+                            technique: { type: Type.STRING },
+                            belt: { type: Type.STRING },
+                            quote: { type: Type.STRING }
+                          },
+                          required: ["book", "technique", "belt", "quote"]
+                        },
+                        youtube_query: { type: Type.STRING }
+                      },
+                      required: ["role", "status", "summary", "techniques", "mistakes", "tips", "reference", "youtube_query"]
+                    }
+                  }
                 },
-                required: ["role", "status", "summary", "techniques", "mistakes", "tips", "reference", "youtube_query"]
+                required: ["fighters"]
               }
             }
+          });
+
+          // 📊 METRICS & SUCCESS
+          const duration = performance.now() - startTime;
+          const usage = response.usageMetadata;
+
+          if (usage) {
+            console.log("🔥 TOKEN CONSUMPTION:", usage);
+            console.log(`💰 Perf: ${duration.toFixed(0)}ms`);
+            MetricsService.logAnalysis(duration, usage.promptTokenCount, usage.candidatesTokenCount, modelName);
+
+            // 📈 LOG AVERAGE TIME FOR USER
+            const stats = MetricsService.getSummary();
+            if (stats) console.log(`⏱️ AVERAGE ANALYSIS TIME: ${stats.avgLatency} (Samples: ${stats.totalRuns})`);
+          }
+
+          const jsonText = response.text;
+          if (!jsonText) throw new Error("Gemini response was empty");
+
+          try {
+            return JSON.parse(jsonText) as AnalysisResult;
+          } catch (e: any) {
+            MetricsService.logError("JSON Parse", e.message);
+            throw e; // Retry on parse error? Maybe not.
+          }
+
+        } catch (error: any) {
+          console.warn(`⚠️ Attempt ${attempts + 1} failed on ${modelName}:`, error.message);
+          lastError = error;
+
+          // Check if retriable (429 or 503)
+          if (error.message?.includes('429') || error.message?.includes('exhausted') || error.message?.includes('503')) {
+            attempts++;
+            if (attempts < maxAttempts) {
+              // 🧠 Smart Wait: Extract suggested wait time from error message
+              const match = error.message.match(/retry in (\d+(\.\d+)?)s/);
+              const apiWaitTime = match ? parseFloat(match[1]) * 1000 : 0;
+
+              // Use the larger of: API suggestion OR Exponential Backoff (2s, 4s, 8s)
+              const backoffTime = Math.pow(2, attempts) * 2000;
+              const finalWaitTime = Math.max(apiWaitTime, backoffTime);
+
+              console.log(`⏳ Quota hit. Waiting ${(finalWaitTime / 1000).toFixed(1)}s before retry...`);
+              await new Promise(resolve => setTimeout(resolve, finalWaitTime));
+              continue; // Retry loop
+            }
+          } else {
+            // Non-retriable error (e.g. 400 Bad Request), break inner loop and try next model?
+            // Actually usually 400 means prompt was bad, so next model won't help. But let's try just in case.
+            break;
           }
         }
-      }
-    });
+      } // End while attempts
+    } // End for models
 
-    if (response.text) {
-      const rawResult = JSON.parse(response.text);
-
-      const result: AnalysisResult = {
-        fighters: rawResult.fighters
-      };
-
-      const groundingChunks = response.candidates?.[0]?.groundingMetadata?.groundingChunks;
-      if (groundingChunks) {
-        result.groundingSources = groundingChunks
-          .filter(chunk => chunk.web?.uri && chunk.web?.title)
-          .map(chunk => ({
-            url: chunk.web!.uri!,
-            title: chunk.web!.title!
-          }));
-      }
-
-      return result;
+    // If we get here, all models/retries failed
+    MetricsService.logError("Final Failure", lastError?.message);
+    if (lastError?.message?.includes('429')) {
+      throw new Error("Server is busy (Quota Exceeded). Please wait 30 seconds and try again.");
     }
+    throw lastError;
 
-    throw new Error("Fallo en la inferencia del modelo.");
-
-  } catch (error) {
-    console.error("Error en auditoría técnica:", error);
-    throw error;
+  } catch (err: any) {
+    // Catch-all for top level errors
+    throw err;
   }
 };

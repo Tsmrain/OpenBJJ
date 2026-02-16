@@ -26,6 +26,7 @@ import {
   ExternalLink,
   User,
   History,
+  Activity,
   Calendar,
   ChevronRight,
   TrendingUp,
@@ -39,6 +40,7 @@ import Button from './components/Button';
 import GlassCard from './components/GlassCard';
 import { analyzeBJJVideo } from './services/geminiService';
 import { saveAnalysisToHistory, getAnalysisHistory, deleteAnalysisFromHistory } from './services/historyService';
+import { MetricsService } from './services/metricsService';
 import { AnalysisResult, AppView, VideoState, FighterAnalysis } from './types';
 
 // Constants
@@ -58,8 +60,8 @@ const AnalyzingView: React.FC<{ executionTime: number }> = ({ executionTime }) =
           </div>
         </div>
 
-        <h2 className="text-xl font-bold text-gray-900 mb-2">Analizando Video</h2>
-        <p className="text-gray-500 text-sm mb-6">Consultando base de conocimiento...</p>
+        <h2 className="text-xl font-bold text-gray-900 mb-2">Analyzing Video</h2>
+        <p className="text-gray-500 text-sm mb-6">Consulting knowledge base...</p>
 
         {/* Live Timer */}
         <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full font-mono text-xs text-gray-500 border border-gray-200">
@@ -128,7 +130,7 @@ const App: React.FC = () => {
     if (success) {
       setHistoryList(prev => prev.filter(item => item.id !== id));
     } else {
-      setError("No se pudo eliminar el registro del historial.");
+      setError("Could not delete history record.");
     }
   };
 
@@ -144,7 +146,7 @@ const App: React.FC = () => {
       setError(null);
     } catch (err) {
       console.error(err);
-      setError("No se puede acceder a la cámara. Revisa los permisos.");
+      setError("Cannot access camera. Please check permissions.");
     }
   };
 
@@ -257,7 +259,7 @@ const App: React.FC = () => {
 
     } catch (err) {
       if (analysisIntervalRef.current) clearInterval(analysisIntervalRef.current);
-      setError("La auditoría técnica falló. Intenta nuevamente.");
+      setError("Technical audit failed. Please try again.");
       setView('preview');
     }
   };
@@ -341,7 +343,7 @@ const App: React.FC = () => {
     <div className="flex flex-col h-full p-6 animate-fade-in">
       <header className="mb-12 mt-8">
         <h1 className="text-4xl font-bold text-gray-900 tracking-tight">OpenBJJ</h1>
-        <p className="text-gray-500 mt-2 text-lg">Auditoría Técnica de Jiu-Jitsu</p>
+        <p className="text-gray-500 mt-2 text-lg">Technical Jiu-Jitsu Audit</p>
       </header>
 
       <div className="flex-1 flex flex-col gap-6 justify-center">
@@ -352,8 +354,8 @@ const App: React.FC = () => {
           <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-active:scale-90 transition-transform">
             <Camera size={32} />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Grabar Entrenamiento</h2>
-          <p className="text-gray-400 text-sm">Cámara Segura (Máx 45s)</p>
+          <h2 className="text-xl font-semibold text-gray-800">Record Sparring</h2>
+          <p className="text-gray-400 text-sm">Secure Camera (Max 45s)</p>
         </GlassCard>
 
         <div className="grid grid-cols-2 gap-4">
@@ -369,7 +371,7 @@ const App: React.FC = () => {
                 <Upload size={24} />
               </div>
               <div className="text-center">
-                <h2 className="font-semibold text-gray-800 text-sm">Subir Video</h2>
+                <h2 className="font-semibold text-gray-800 text-sm">Upload Video</h2>
               </div>
             </GlassCard>
           </div>
@@ -382,9 +384,26 @@ const App: React.FC = () => {
               <History size={24} />
             </div>
             <div className="text-center">
-              <h2 className="font-semibold text-gray-800 text-sm">Historial</h2>
+              <h2 className="font-semibold text-gray-800 text-sm">History</h2>
             </div>
           </GlassCard>
+        </div>
+
+        {/* Debug / Metrics Footer */}
+        <div className="mt-8 text-center">
+          <button
+            onClick={() => {
+              const summary = MetricsService.getSummary();
+              if (summary) {
+                alert(`📊 SYSTEM METRICS REPORT\n\nRuns: ${summary.totalRuns}\nSuccess Rate: ${summary.successRate}\nAvg Latency: ${summary.avgLatency}\nTotal Tokens: ${summary.totalTokens}\nEst. Cost: ${summary.estimatedCost}\nLast Error: ${summary.lastError}`);
+              } else {
+                alert("No metrics collected yet. Run an analysis!");
+              }
+            }}
+            className="text-[10px] text-gray-400 hover:text-blue-500 flex items-center justify-center gap-1 mx-auto transition-colors"
+          >
+            <Activity size={10} /> View System Health
+          </button>
         </div>
       </div>
 
@@ -402,7 +421,7 @@ const App: React.FC = () => {
           <button onClick={() => setView('home')} className="p-2 -ml-2 rounded-full hover:bg-gray-200 transition-colors">
             <ChevronLeft className="text-gray-800" />
           </button>
-          <h2 className="text-xl font-bold ml-2 text-gray-900">Historial</h2>
+          <h2 className="text-xl font-bold ml-2 text-gray-900">History</h2>
         </header>
 
         <div className="flex-1 overflow-y-auto no-scrollbar">
@@ -412,13 +431,13 @@ const App: React.FC = () => {
             {loadingHistory ? (
               <div className="flex flex-col items-center justify-center h-40 gap-3">
                 <div className="w-8 h-8 border-2 border-gray-300 border-t-blue-500 rounded-full animate-spin"></div>
-                <p className="text-sm text-gray-400">Cargando...</p>
+                <p className="text-sm text-gray-400">Loading...</p>
               </div>
             ) : historyList.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-40 text-center p-6">
                 <History size={32} className="text-gray-300 mb-2" />
-                <p className="text-gray-500 font-medium text-sm">No hay historial aún</p>
-                <p className="text-xs text-gray-400 mt-1">Tus análisis recientes aparecerán aquí.</p>
+                <p className="text-gray-500 font-medium text-sm">No history yet</p>
+                <p className="text-xs text-gray-400 mt-1">Your recent analyses will appear here.</p>
               </div>
             ) : (
               historyList.map((item, idx) => (
@@ -436,7 +455,7 @@ const App: React.FC = () => {
                       <button
                         onClick={(e) => handleDeleteHistoryItem(e, item.id)}
                         className="p-1.5 text-gray-400 hover:text-red-500 hover:bg-red-50 rounded-lg transition-colors"
-                        title="Eliminar del historial"
+                        title="Delete from history"
                       >
                         <Trash2 size={14} />
                       </button>
@@ -459,7 +478,7 @@ const App: React.FC = () => {
                             {fighter.role}
                           </p>
                           <p className="text-xs text-gray-400 truncate">
-                            {fighter.techniques.slice(0, 2).join(", ") || "Análisis general"}
+                            {fighter.techniques.slice(0, 2).join(", ") || "General analysis"}
                           </p>
                         </div>
                       </div>
@@ -546,7 +565,7 @@ const App: React.FC = () => {
         <button onClick={resetApp} className="p-2 -ml-2 rounded-full hover:bg-gray-200 transition-colors">
           <ChevronLeft className="text-gray-800" />
         </button>
-        <h2 className="text-xl font-bold ml-2 text-gray-900">Validar Carga</h2>
+        <h2 className="text-xl font-bold ml-2 text-gray-900">Validate Upload</h2>
       </header>
 
       {isCompressing ? (
@@ -557,7 +576,7 @@ const App: React.FC = () => {
               style={{ width: `${compressionProgress}%` }}
             />
           </div>
-          <p className="text-gray-500 font-medium animate-pulse">Optimizando buffer (RAM)...</p>
+          <p className="text-gray-500 font-medium animate-pulse">Optimizing buffer (RAM)...</p>
         </div>
       ) : (
         <>
@@ -571,7 +590,7 @@ const App: React.FC = () => {
             )}
             <div className="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-lg text-xs font-mono text-white/80 flex items-center gap-1">
               <ShieldCheck size={12} />
-              Listo para auditar
+              Ready to audit
             </div>
           </div>
 
@@ -581,17 +600,17 @@ const App: React.FC = () => {
                 <Clock size={20} />
               </div>
               <div>
-                <h3 className="font-semibold text-gray-800 text-sm">Validación Exitosa</h3>
-                <p className="text-gray-500 text-xs">Duración válida. Compresión lista.</p>
+                <h3 className="font-semibold text-gray-800 text-sm">Validation Successful</h3>
+                <p className="text-gray-500 text-xs">Valid duration. Compression ready.</p>
               </div>
               <CheckCircle2 size={20} className="text-green-500 ml-auto" />
             </GlassCard>
 
             <Button fullWidth onClick={handleAnalyze} icon={<CloudLightning size={18} />}>
-              Ejecutar Auditoría Técnica
+              Run Technical Audit
             </Button>
             <p className="text-center text-xs text-gray-400 flex items-center justify-center gap-1">
-              <Lock size={10} /> Tus datos serán borrados tras el análisis
+              <Lock size={10} /> Your data is deleted after analysis
             </p>
           </div>
         </>
@@ -608,12 +627,12 @@ const App: React.FC = () => {
           <Upload size={32} className="animate-bounce" />
         </div>
       </div>
-      <h2 className="text-2xl font-bold text-gray-900 mb-2">Transmisión Segura</h2>
+      <h2 className="text-2xl font-bold text-gray-900 mb-2">Secure Transmission</h2>
       <p className="text-gray-500 text-sm max-w-xs mx-auto mb-4">
-        Subiendo a bucket temporal encriptado...
+        Uploading to encrypted temporal bucket...
       </p>
       <div className="flex items-center gap-2 text-xs text-green-600 bg-green-50 px-3 py-1 rounded-full border border-green-100">
-        <Lock size={12} /> Canal TLS 1.3
+        <Lock size={12} /> TLS 1.3 Channel
       </div>
     </div>
   );
@@ -630,7 +649,7 @@ const App: React.FC = () => {
     const bgHeader = isApproved ? 'bg-green-500' : 'bg-orange-500';
     const textHeader = 'text-white';
     const StatusIcon = isApproved ? Check : AlertTriangle;
-    const verdictText = isApproved ? 'TÉCNICA APROBADA' : 'REQUIERE CORRECCIÓN';
+    const verdictText = isApproved ? 'TECHNIQUE APPROVED' : 'CORRECTION NEEDED';
 
     return (
       <div className="flex flex-col h-full bg-[#f2f2f7] overflow-y-auto no-scrollbar relative">
@@ -643,7 +662,7 @@ const App: React.FC = () => {
               <div className="bg-gray-100 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
                 <div className="flex items-center gap-2 text-gray-800">
                   <Book size={18} />
-                  <span className="font-bold text-sm">Referencia Bibliográfica</span>
+                  <span className="font-bold text-sm">Bibliographic Reference</span>
                 </div>
                 <button
                   onClick={() => setShowReferenceModal(false)}
@@ -656,7 +675,7 @@ const App: React.FC = () => {
               {/* Modal Content */}
               <div className="p-6 space-y-4">
                 <div className="space-y-1">
-                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Libro</p>
+                  <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Book</p>
                   <h3 className="text-lg font-bold text-gray-900 leading-tight">
                     {activeData.reference.book}
                   </h3>
@@ -664,19 +683,21 @@ const App: React.FC = () => {
 
                 <div className="flex gap-6">
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Cinturón</p>
-                    <p className="font-medium text-gray-700">{activeData.reference.chapter}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Belt Level</p>
+                    {/* Fallback for legacy data */}
+                    <p className="font-medium text-gray-700">{(activeData.reference as any).belt || (activeData.reference as any).chapter || "-"}</p>
                   </div>
                   <div className="space-y-1">
-                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Tabla de Contenidos</p>
-                    <p className="font-medium text-gray-700">{activeData.reference.page}</p>
+                    <p className="text-xs font-bold text-gray-400 uppercase tracking-wider">Technique / Section</p>
+                    {/* Fallback for legacy data */}
+                    <p className="font-medium text-gray-700">{(activeData.reference as any).technique || (activeData.reference as any).page || "-"}</p>
                   </div>
                 </div>
 
                 <div className="bg-blue-50 p-4 rounded-xl border border-blue-100">
                   <div className="flex gap-2 mb-2">
                     <Bookmark size={16} className="text-blue-500 shrink-0" />
-                    <p className="text-xs font-bold text-blue-500 uppercase tracking-wider">Concepto Clave</p>
+                    <p className="text-xs font-bold text-blue-500 uppercase tracking-wider">Key Concept</p>
                   </div>
                   <p className="text-sm text-gray-700 italic leading-relaxed">
                     "{activeData.reference.quote}"
@@ -686,7 +707,7 @@ const App: React.FC = () => {
 
               <div className="bg-gray-50 px-6 py-4">
                 <Button fullWidth onClick={() => setShowReferenceModal(false)} variant="secondary">
-                  Cerrar Referencia
+                  Close Reference
                 </Button>
               </div>
             </div>
@@ -699,7 +720,7 @@ const App: React.FC = () => {
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center text-white font-bold text-xs">
               AI
             </div>
-            <span className="font-bold text-gray-900">Diagnóstico</span>
+            <span className="font-bold text-gray-900">Diagnosis</span>
           </div>
 
           <div className="flex items-center gap-3">
@@ -714,7 +735,7 @@ const App: React.FC = () => {
             {!fromHistory && (
               <button onClick={resetApp} className="text-blue-600 font-medium text-sm flex items-center gap-1">
                 <Trash2 size={14} />
-                Borrar
+                Clear
               </button>
             )}
           </div>
@@ -735,7 +756,7 @@ const App: React.FC = () => {
                   `}
                 >
                   <User size={14} />
-                  <span className="truncate max-w-[100px]">{fighter.role || `Luchador ${idx + 1}`}</span>
+                  <span className="truncate max-w-[100px]">{fighter.role || `Fighter ${idx + 1}`}</span>
                 </button>
               );
             })}
@@ -761,7 +782,7 @@ const App: React.FC = () => {
             {/* Detalles Técnicos */}
             <div className="p-5 bg-white space-y-4">
               <div>
-                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Técnicas Detectadas</h3>
+                <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2">Current/Detected Techniques</h3>
                 <div className="flex flex-wrap gap-2">
                   {activeData.techniques.map((tech, i) => (
                     <span key={i} className="px-3 py-1 bg-gray-50 border border-gray-200 rounded-full text-xs font-medium text-gray-700">
@@ -779,7 +800,7 @@ const App: React.FC = () => {
               <GlassCard className="p-4 border-l-4 border-l-red-500 bg-red-50/50">
                 <h3 className="flex items-center gap-2 font-semibold text-red-700 text-sm mb-2">
                   <AlertCircle size={16} />
-                  Errores Críticos
+                  Critical Mistakes
                 </h3>
                 <ul className="list-disc pl-5 space-y-1">
                   {activeData.mistakes.map((m, i) => (
@@ -792,7 +813,7 @@ const App: React.FC = () => {
             <GlassCard className="p-4 border-l-4 border-l-green-500 bg-green-50/50">
               <h3 className="flex items-center gap-2 font-semibold text-green-700 text-sm mb-2">
                 <Zap size={16} />
-                Plan de Mejora
+                Improvement Plan
               </h3>
               <ul className="list-disc pl-5 space-y-1">
                 {activeData.tips.map((t, i) => (
@@ -802,25 +823,27 @@ const App: React.FC = () => {
             </GlassCard>
           </div>
 
-          {/* Acciones Secundarias (Habilitar Botones) */}
+          {/* Secondary Actions (Enable Buttons) */}
           <div className="pt-2">
-            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 pl-1">Recursos de Aprendizaje</h3>
+            <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3 pl-1">Learning Resources</h3>
             <div className="grid grid-cols-2 gap-3">
               <Button
                 variant="glass"
                 className="h-auto py-3 flex-col gap-1"
                 icon={<BookOpen size={20} />}
-                onClick={() => setShowReferenceModal(true)}
+                onClick={() => activeData.reference && setShowReferenceModal(true)}
+                disabled={!activeData.reference}
               >
-                <span className="text-xs">Manual Técnico</span>
+                <span className="text-xs">Technical Manual</span>
               </Button>
               <Button
                 variant="glass"
                 className="h-auto py-3 flex-col gap-1"
                 icon={<Youtube size={20} />}
                 onClick={handleOpenVideoReference}
+                disabled={!activeData.youtube_query}
               >
-                <span className="text-xs">Video Referencia</span>
+                <span className="text-xs">Reference Video</span>
               </Button>
             </div>
           </div>
@@ -830,7 +853,7 @@ const App: React.FC = () => {
             <div className="mt-4">
               <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-2 pl-1 flex items-center gap-1">
                 <Globe size={12} />
-                Fuentes Verificadas (Google)
+                Verified Sources (Google)
               </h3>
               <div className="flex flex-col gap-2">
                 {analysis.groundingSources.map((source, idx) => (
@@ -863,12 +886,12 @@ const App: React.FC = () => {
             </div>
           )}
 
-          <div className="h-8" />
+          <div className="h-4" />
         </div>
 
         <div className="sticky bottom-6 px-6 z-20">
           <Button variant="secondary" fullWidth onClick={resetApp} icon={<RotateCcw size={16} />}>
-            {fromHistory ? "Volver al Historial" : "Nueva Auditoría"}
+            {fromHistory ? "Back to History" : "New Audit"}
           </Button>
         </div>
       </div>

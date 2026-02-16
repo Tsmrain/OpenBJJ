@@ -1,8 +1,8 @@
 
 export interface ReferenceData {
   book: string;
-  chapter: string;
-  page: string;
+  technique: string;
+  belt: string;
   quote: string;
 }
 
