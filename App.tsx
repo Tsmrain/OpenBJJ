@@ -47,7 +47,7 @@ import { AnalysisResult, AppView, VideoState, FighterAnalysis } from './types';
 const MAX_DURATION_SEC = 45;
 
 // --- Sub-component for Analyzing View (Simplified) ---
-const AnalyzingView: React.FC<{ executionTime: number }> = ({ executionTime }) => {
+const AnalyzingView: React.FC<{ executionTime: number; onCancel?: () => void }> = ({ executionTime, onCancel }) => {
   return (
     <div className="flex flex-col h-full items-center justify-center p-8 text-center bg-white/90 backdrop-blur-xl animate-fade-in relative overflow-hidden">
 
@@ -64,10 +64,21 @@ const AnalyzingView: React.FC<{ executionTime: number }> = ({ executionTime }) =
         <p className="text-gray-500 text-sm mb-6">Consulting knowledge base...</p>
 
         {/* Live Timer */}
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full font-mono text-xs text-gray-500 border border-gray-200">
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-gray-100 rounded-full font-mono text-xs text-gray-500 border border-gray-200 mb-12">
           <Timer size={12} className="text-gray-400" />
           {executionTime.toFixed(1)}s
         </div>
+
+        {/* Apple-style Cancel Button */}
+        {onCancel && (
+          <button
+            onClick={onCancel}
+            className="group flex items-center gap-2 px-6 py-2.5 bg-gray-100/80 hover:bg-red-50 text-gray-600 hover:text-red-500 rounded-full text-sm font-medium tracking-wide transition-all duration-300 border border-gray-200/50 hover:border-red-200 shadow-sm backdrop-blur-md active:scale-95"
+          >
+            <X size={16} className="transition-transform group-hover:rotate-90 duration-300" />
+            Cancel Analysis
+          </button>
+        )}
       </div>
     </div>
   );
@@ -101,6 +112,9 @@ const App: React.FC = () => {
   // Analysis Timer State
   const [executionTime, setExecutionTime] = useState(0);
   const analysisIntervalRef = useRef<number | null>(null);
+
+  // Cancellation State
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   // --- EFFECTS ---
 
@@ -242,8 +256,11 @@ const App: React.FC = () => {
       setExecutionTime((Date.now() - startTime) / 1000);
     }, 100);
 
+    // Initialize Abort Controller for this request
+    abortControllerRef.current = new AbortController();
+
     try {
-      const result = await analyzeBJJVideo(videoState.blob);
+      const result = await analyzeBJJVideo(videoState.blob, abortControllerRef.current.signal);
 
       // Stop Timer
       if (analysisIntervalRef.current) clearInterval(analysisIntervalRef.current);
@@ -257,11 +274,28 @@ const App: React.FC = () => {
       // 3. Guardado Local (LocalStorage)
       saveAnalysisToHistory(result);
 
-    } catch (err) {
+    } catch (err: any) {
       if (analysisIntervalRef.current) clearInterval(analysisIntervalRef.current);
+
+      if (err.message === "Analysis cancelled by user") {
+        console.log("Analysis was cancelled successfully.");
+        return; // Exit silently, view already changed
+      }
+
+      console.error("Analysis failed:", err);
       setError("Technical audit failed. Please try again.");
       setView('preview');
+    } finally {
+      abortControllerRef.current = null;
     }
+  };
+
+  const handleCancelAnalysis = () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    if (analysisIntervalRef.current) clearInterval(analysisIntervalRef.current);
+    setView('preview'); // Instantly return to preview
   };
 
   const handleSelectHistoryItem = (item: AnalysisResult) => {
@@ -925,7 +959,7 @@ const App: React.FC = () => {
         </div>
       )}
       {view === 'uploading' && renderUploading()}
-      {view === 'analyzing' && <AnalyzingView executionTime={executionTime} />}
+      {view === 'analyzing' && <AnalyzingView executionTime={executionTime} onCancel={handleCancelAnalysis} />}
       {view === 'result' && (
         <div className="w-full h-full max-w-lg mx-auto bg-[#f2f2f7]">
           {renderResult()}

@@ -358,7 +358,7 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 9): P
   return frames;
 };
 
-export const analyzeBJJVideo = async (videoBlob: Blob): Promise<AnalysisResult> => {
+export const analyzeBJJVideo = async (videoBlob: Blob, signal?: AbortSignal): Promise<AnalysisResult> => {
   // Client initialization using env var
   const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
 
@@ -404,6 +404,10 @@ Respond ONLY in valid JSON.`
       const maxAttempts = 3;
 
       while (attempts < maxAttempts) {
+        if (signal?.aborted) {
+          throw new Error("Analysis cancelled by user");
+        }
+
         try {
           console.log(`🤖 Predicting with ${modelName} (Attempt ${attempts + 1}/${maxAttempts})...`);
 
