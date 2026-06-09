@@ -395,8 +395,8 @@ Respond ONLY in valid JSON.`
       }
     ];
     // 3. MODEL INFERENCE WITH RETRY & FALLBACK
-    // User requested 'gemini-3-flash-preview' as primary.
-    const modelsToTry = ['gemini-3-flash-preview', 'gemini-2.0-flash', 'gemini-1.5-flash-latest'];
+    // Using 'gemini-3.5-flash' as the primary recommended stable model.
+    const modelsToTry = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
     let lastError: any;
 
     for (const modelName of modelsToTry) {
