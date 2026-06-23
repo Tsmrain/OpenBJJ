@@ -1,69 +1,53 @@
-import { openDB, DBSchema } from 'idb';
 import { AnalysisResult } from "../types";
 
-const DB_NAME = 'openbjj-db';
-const STORE_NAME = 'analysis-store';
-
-interface OpenBJJDB extends DBSchema {
-  [STORE_NAME]: {
-    key: string;
-    value: AnalysisResult;
-    indexes: { 'by-date': number };
-  };
-}
-
-// Inicializar la base de datos
-const dbPromise = openDB<OpenBJJDB>(DB_NAME, 1, {
-  upgrade(db) {
-    const store = db.createObjectStore(STORE_NAME, { keyPath: 'id' });
-    store.createIndex('by-date', 'timestamp');
-  },
-});
-
 /**
- * Guarda el análisis usando IndexedDB.
+ * Saves the analysis results to the central server history.
  */
-export const saveAnalysisToHistory = async (analysis: AnalysisResult) => {
-  const timestamp = Date.now();
-  const id = `local-${timestamp}`;
-  const newItem = { ...analysis, timestamp, id };
-
+export const saveAnalysisToHistory = async (analysis: AnalysisResult): Promise<string | null> => {
   try {
-    const db = await dbPromise;
-    await db.put(STORE_NAME, newItem);
-    console.log("Análisis guardado en IndexedDB:", id);
-    return id;
+    const response = await fetch('/api/history', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(analysis),
+    });
+    if (!response.ok) throw new Error("HTTP error saving history");
+    const data = await response.json();
+    return data.id || null;
   } catch (e) {
-    console.error("Error guardando en IndexedDB", e);
+    console.error("Error saving central history:", e);
     return null;
   }
 };
 
 /**
- * Obtiene el historial completo ordenado por fecha descendente.
+ * Gets all analysis history from the central server.
  */
 export const getAnalysisHistory = async (): Promise<AnalysisResult[]> => {
   try {
-    const db = await dbPromise;
-    const allItems = await db.getAllFromIndex(STORE_NAME, 'by-date');
-    // IndexedDB devuelve en orden ascendente (más viejo primero), invertimos para mostrar lo más reciente.
-    return allItems.reverse();
+    const response = await fetch('/api/history');
+    if (!response.ok) throw new Error("HTTP error fetching history");
+    return await response.json();
   } catch (e) {
-    console.error("Error leyendo IndexedDB", e);
+    console.error("Error fetching central history:", e);
     return [];
   }
 };
 
 /**
- * Elimina un análisis específico del historial por su ID.
+ * Deletes an analysis item by ID from the central server.
  */
-export const deleteAnalysisFromHistory = async (id: string) => {
+export const deleteAnalysisFromHistory = async (id: string): Promise<boolean> => {
   try {
-    const db = await dbPromise;
-    await db.delete(STORE_NAME, id);
-    return true;
+    const response = await fetch(`/api/history/${id}`, {
+      method: 'DELETE',
+    });
+    if (!response.ok) throw new Error("HTTP error deleting history");
+    const data = await response.json();
+    return !!data.success;
   } catch (e) {
-    console.error("Error eliminando de IndexedDB", e);
+    console.error("Error deleting central history item:", e);
     return false;
   }
 };

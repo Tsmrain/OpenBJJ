@@ -133,14 +133,6 @@ const App: React.FC = () => {
   useEffect(() => {
     loadRagSources();
     loadProgressData();
-
-    // Check if API key is present in environment or localstorage
-    const envKey = process.env.API_KEY;
-    const hasEnvKey = envKey && envKey !== 'undefined' && envKey !== 'null' && envKey.trim() !== '';
-    const hasLocalKey = localStorage.getItem('VITE_API_KEY');
-    if (!hasEnvKey && !hasLocalKey) {
-      setApiKeyMissing(true);
-    }
   }, [loadRagSources, loadProgressData]);
 
   const handleSaveApiKey = (key: string) => {
@@ -426,8 +418,8 @@ const App: React.FC = () => {
     const file = event.target.files?.[0];
     if (!file) return;
 
-    if (file.size > 10 * 1024 * 1024) {
-      setRagUploadError("El archivo PDF supera el límite de 10MB.");
+    if (file.size > 50 * 1024 * 1024) {
+      setRagUploadError("El archivo PDF supera el límite de 50MB.");
       return;
     }
 
@@ -730,7 +722,7 @@ const App: React.FC = () => {
               <Plus size={24} />
             </div>
             <p className="text-sm font-semibold text-gray-700">Subir PDF de BJJ</p>
-            <p className="text-xs text-gray-450">Manuales, reglas, o guías escritas (Máx 10MB)</p>
+            <p className="text-xs text-gray-450">Manuales, reglas, o guías escritas (Máx 50MB)</p>
           </div>
         </div>
 

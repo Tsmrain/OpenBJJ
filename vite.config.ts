@@ -8,6 +8,13 @@ export default defineConfig(({ mode }) => {
     plugins: [react()],
     server: {
       host: true,
+      proxy: {
+        '/api': {
+          target: 'http://localhost:3001',
+          changeOrigin: true,
+          secure: false,
+        }
+      }
     },
     define: {
       'process.env.API_KEY': JSON.stringify(env.VITE_API_KEY),
