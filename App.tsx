@@ -34,14 +34,21 @@ import {
   Award,
   Timer,
   BrainCircuit,
-  Quote
+  Quote,
+  Plus,
+  Search,
+  FileText,
+  PlusCircle,
+  Settings
 } from 'lucide-react';
 import Button from './components/Button';
 import GlassCard from './components/GlassCard';
-import { analyzeBJJVideo } from './services/geminiService';
+import { analyzeBJJVideo, validateBJJSource, adaptLearningResource } from './services/geminiService';
 import { saveAnalysisToHistory, getAnalysisHistory, deleteAnalysisFromHistory } from './services/historyService';
 import { MetricsService } from './services/metricsService';
-import { AnalysisResult, AppView, VideoState, FighterAnalysis } from './types';
+import { RagService } from './services/ragService';
+import { openDB } from 'idb';
+import { AnalysisResult, AppView, VideoState, FighterAnalysis, RagSource, TechniqueProgress, LearningAdaptationLog } from './types';
 
 // Constants
 const MAX_DURATION_SEC = 45;
@@ -95,6 +102,55 @@ const App: React.FC = () => {
   const [activeFighterIndex, setActiveFighterIndex] = useState(0); // 0 or 1
   const [loadingHistory, setLoadingHistory] = useState(false);
   const [fromHistory, setFromHistory] = useState(false);
+
+  // Tab and RAG State
+  const [activeTab, setActiveTab] = useState<'sparring' | 'library' | 'progress'>('sparring');
+  const [ragSources, setRagSources] = useState<RagSource[]>([]);
+  const [progressList, setProgressList] = useState<TechniqueProgress[]>([]);
+  const [adaptationLogs, setAdaptationLogs] = useState<LearningAdaptationLog[]>([]);
+  const [isUploadingRag, setIsUploadingRag] = useState(false);
+  const [ragUploadError, setRagUploadError] = useState<string | null>(null);
+  const [youtubeUrlInput, setYoutubeUrlInput] = useState("");
+  const [isSubmittingYoutube, setIsSubmittingYoutube] = useState(false);
+
+  // API Key config states
+  const [apiKeyInput, setApiKeyInput] = useState(localStorage.getItem('VITE_API_KEY') || '');
+  const [showSettingsModal, setShowSettingsModal] = useState(false);
+  const [apiKeyMissing, setApiKeyMissing] = useState(false);
+
+  const loadProgressData = useCallback(async () => {
+    const list = await RagService.getTechniqueProgressList();
+    setProgressList(list);
+    const logs = await RagService.getAdaptationLogs();
+    setAdaptationLogs(logs);
+  }, []);
+
+  const loadRagSources = useCallback(async () => {
+    const list = await RagService.getRagSources();
+    setRagSources(list);
+  }, []);
+
+  useEffect(() => {
+    loadRagSources();
+    loadProgressData();
+
+    // Check if API key is present in environment or localstorage
+    const envKey = process.env.API_KEY;
+    const hasEnvKey = envKey && envKey !== 'undefined' && envKey !== 'null' && envKey.trim() !== '';
+    const hasLocalKey = localStorage.getItem('VITE_API_KEY');
+    if (!hasEnvKey && !hasLocalKey) {
+      setApiKeyMissing(true);
+    }
+  }, [loadRagSources, loadProgressData]);
+
+  const handleSaveApiKey = (key: string) => {
+    localStorage.setItem('VITE_API_KEY', key);
+    setApiKeyInput(key);
+    setApiKeyMissing(false);
+    setShowSettingsModal(false);
+    // Reload page to re-initialize Gemini clients
+    window.location.reload();
+  };
 
   // Recording State
   const [isRecording, setIsRecording] = useState(false);
@@ -260,7 +316,18 @@ const App: React.FC = () => {
     abortControllerRef.current = new AbortController();
 
     try {
-      const result = await analyzeBJJVideo(videoState.blob, abortControllerRef.current.signal);
+      // Fetch dynamic library context (RAG)
+      const ragContext = await RagService.compileRagContext();
+
+      const result = await analyzeBJJVideo(
+        videoState.blob,
+        ragContext,
+        abortControllerRef.current.signal
+      );
+
+      // Track BJJ sparring results & adapt queries if stagnating
+      await RagService.trackSparringAudit(result.fighters, adaptLearningResource);
+      await loadProgressData();
 
       // Stop Timer
       if (analysisIntervalRef.current) clearInterval(analysisIntervalRef.current);
@@ -355,6 +422,174 @@ const App: React.FC = () => {
     }
   };
 
+  const handlePdfUpload = async (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    if (file.size > 10 * 1024 * 1024) {
+      setRagUploadError("El archivo PDF supera el límite de 10MB.");
+      return;
+    }
+
+    setIsUploadingRag(true);
+    setRagUploadError(null);
+
+    const tempId = `pdf-${Date.now()}`;
+    const pendingSource: RagSource = {
+      id: tempId,
+      type: 'pdf',
+      name: file.name,
+      contentSummary: "Validando el contenido del PDF con IA...",
+      validated: false,
+      timestamp: Date.now(),
+      techniquesCovered: []
+    };
+
+    setRagSources(prev => [pendingSource, ...prev]);
+    await RagService.saveRagSource(pendingSource);
+
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = async () => {
+      try {
+        const base64Data = (reader.result as string).split(',')[1];
+        const validationResult = await validateBJJSource('pdf', { base64Pdf: base64Data, title: file.name });
+
+        if (validationResult.valid) {
+          const finalSource: RagSource = {
+            ...pendingSource,
+            name: validationResult.name || file.name,
+            contentSummary: validationResult.summary,
+            validated: true,
+            techniquesCovered: validationResult.techniques
+          };
+          await RagService.saveRagSource(finalSource);
+          setRagSources(prev => prev.map(s => s.id === tempId ? finalSource : s));
+        } else {
+          const failedSource: RagSource = {
+            ...pendingSource,
+            contentSummary: `Rechazado: ${validationResult.reason || "El contenido no está relacionado con BJJ."}`,
+            validated: false
+          };
+          await RagService.saveRagSource(failedSource);
+          setRagSources(prev => prev.map(s => s.id === tempId ? failedSource : s));
+        }
+      } catch (err: any) {
+        console.error("PDF validation failed:", err);
+        const failedSource: RagSource = {
+          ...pendingSource,
+          contentSummary: "Error durante la validación del PDF.",
+          validated: false
+        };
+        await RagService.saveRagSource(failedSource);
+        setRagSources(prev => prev.map(s => s.id === tempId ? failedSource : s));
+      } finally {
+        setIsUploadingRag(false);
+      }
+    };
+    reader.onerror = () => {
+      setRagUploadError("No se pudo leer el archivo PDF.");
+      setIsUploadingRag(false);
+    };
+  };
+
+  const handleYoutubeSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!youtubeUrlInput.trim()) return;
+
+    setIsSubmittingYoutube(true);
+    setRagUploadError(null);
+
+    const tempId = `yt-${Date.now()}`;
+    const pendingSource: RagSource = {
+      id: tempId,
+      type: 'youtube',
+      name: "Enlace de YouTube",
+      url: youtubeUrlInput,
+      contentSummary: "Obteniendo detalles del video y validando...",
+      validated: false,
+      timestamp: Date.now(),
+      techniquesCovered: []
+    };
+
+    setRagSources(prev => [pendingSource, ...prev]);
+    await RagService.saveRagSource(pendingSource);
+
+    try {
+      let title = "Video de YouTube BJJ";
+      try {
+        const oembedUrl = `https://noembed.com/embed?url=${encodeURIComponent(youtubeUrlInput)}`;
+        const res = await fetch(oembedUrl);
+        const data = await res.json();
+        if (data.title) {
+          title = data.title;
+        }
+      } catch (oembedErr) {
+        console.warn("Failed oembed fetch:", oembedErr);
+      }
+
+      const validationResult = await validateBJJSource('youtube', { url: youtubeUrlInput, title });
+
+      if (validationResult.valid) {
+        const finalSource: RagSource = {
+          ...pendingSource,
+          name: validationResult.name || title,
+          contentSummary: validationResult.summary,
+          validated: true,
+          techniquesCovered: validationResult.techniques
+        };
+        await RagService.saveRagSource(finalSource);
+        setRagSources(prev => prev.map(s => s.id === tempId ? finalSource : s));
+        setYoutubeUrlInput("");
+      } else {
+        const failedSource: RagSource = {
+          ...pendingSource,
+          name: title,
+          contentSummary: `Rechazado: ${validationResult.reason || "El video no está relacionado con BJJ."}`,
+          validated: false
+        };
+        await RagService.saveRagSource(failedSource);
+        setRagSources(prev => prev.map(s => s.id === tempId ? failedSource : s));
+      }
+    } catch (err: any) {
+      console.error("YouTube validation failed:", err);
+      const failedSource: RagSource = {
+        ...pendingSource,
+        contentSummary: "Error durante la validación del video.",
+        validated: false
+      };
+      await RagService.saveRagSource(failedSource);
+      setRagSources(prev => prev.map(s => s.id === tempId ? failedSource : s));
+    } finally {
+      setIsSubmittingYoutube(false);
+    }
+  };
+
+  const handleDeleteRagSource = async (id: string) => {
+    const success = await RagService.deleteRagSource(id);
+    if (success) {
+      setRagSources(prev => prev.filter(s => s.id !== id));
+    }
+  };
+
+  const handleResetSystem = async () => {
+    if (window.confirm("¿Estás seguro de que quieres restablecer todo el sistema? Esto borrará toda tu biblioteca RAG, progreso y logs de aprendizaje, e historial de combates.")) {
+      await RagService.clearAllRagData();
+      
+      try {
+        const db = await openDB('openbjj-db', 1);
+        await db.clear('analysis-store');
+      } catch (dbErr) {
+        console.error("Error clearing history database store:", dbErr);
+      }
+      
+      setRagSources([]);
+      setProgressList([]);
+      setAdaptationLogs([]);
+      resetApp();
+    }
+  };
+
   const getActiveData = (): FighterAnalysis | null => {
     if (!analysis || !analysis.fighters) return null;
     return analysis.fighters[activeFighterIndex];
@@ -373,23 +608,32 @@ const App: React.FC = () => {
 
   // --- VIEWS ---
 
-  const renderHome = () => (
-    <div className="flex flex-col h-full p-6 animate-fade-in">
-      <header className="mb-12 mt-8">
-        <h1 className="text-4xl font-bold text-gray-900 tracking-tight">OpenBJJ</h1>
-        <p className="text-gray-500 mt-2 text-lg">Technical Jiu-Jitsu Audit</p>
+  const renderSparringTab = () => (
+    <div className="flex flex-col p-6 animate-fade-in">
+      <header className="mb-10 mt-6 flex justify-between items-start">
+        <div>
+          <h1 className="text-4xl font-extrabold text-gray-900 tracking-tight">OpenBJJ</h1>
+          <p className="text-gray-500 mt-1.5 text-base">Technical Jiu-Jitsu Audit with RAG</p>
+        </div>
+        <button 
+          onClick={() => setShowSettingsModal(true)} 
+          className="p-2.5 bg-white border border-gray-200 rounded-2xl hover:bg-gray-50 text-gray-500 shadow-sm transition-colors active:scale-95 shrink-0"
+          title="Configuración de API Key"
+        >
+          <Settings size={20} />
+        </button>
       </header>
 
-      <div className="flex-1 flex flex-col gap-6 justify-center">
+      <div className="flex flex-col gap-6 justify-center">
         <GlassCard
           onClick={handleStartCamera}
-          className="p-8 flex flex-col items-center justify-center gap-4 h-48 group hover:bg-white/80 transition-colors"
+          className="p-8 flex flex-col items-center justify-center gap-4 h-48 group hover:bg-white transition-all shadow-md"
         >
-          <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-2 group-active:scale-90 transition-transform">
+          <div className="w-16 h-16 rounded-full bg-blue-50 text-blue-600 flex items-center justify-center mb-1 group-hover:scale-110 transition-transform">
             <Camera size={32} />
           </div>
-          <h2 className="text-xl font-semibold text-gray-800">Record Sparring</h2>
-          <p className="text-gray-400 text-sm">Secure Camera (Max 45s)</p>
+          <h2 className="text-xl font-bold text-gray-850">Record Sparring</h2>
+          <p className="text-gray-450 text-xs">Secure Camera (Max 45s)</p>
         </GlassCard>
 
         <div className="grid grid-cols-2 gap-4">
@@ -400,50 +644,378 @@ const App: React.FC = () => {
               className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
               onChange={handleFileUpload}
             />
-            <GlassCard className="p-4 flex flex-col items-center justify-center gap-3 h-full group hover:bg-white/80 transition-colors">
-              <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center">
+            <GlassCard className="p-4 flex flex-col items-center justify-center gap-3 h-full group hover:bg-white transition-all shadow-sm">
+              <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-600 flex items-center justify-center group-hover:scale-110 transition-transform">
                 <Upload size={24} />
               </div>
               <div className="text-center">
-                <h2 className="font-semibold text-gray-800 text-sm">Upload Video</h2>
+                <h2 className="font-bold text-gray-850 text-sm">Upload Video</h2>
               </div>
             </GlassCard>
           </div>
 
           <GlassCard
             onClick={loadHistory}
-            className="p-4 flex flex-col items-center justify-center gap-3 h-40 group hover:bg-white/80 transition-colors"
+            className="p-4 flex flex-col items-center justify-center gap-3 h-40 group hover:bg-white transition-all shadow-sm"
           >
-            <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center">
+            <div className="w-12 h-12 rounded-full bg-orange-50 text-orange-600 flex items-center justify-center group-hover:scale-110 transition-transform">
               <History size={24} />
             </div>
             <div className="text-center">
-              <h2 className="font-semibold text-gray-800 text-sm">History</h2>
+              <h2 className="font-bold text-gray-850 text-sm">History</h2>
             </div>
           </GlassCard>
         </div>
 
-        {/* Debug / Metrics Footer */}
-        <div className="mt-8 text-center">
+        {/* System Settings/Metrics */}
+        <div className="mt-6 flex flex-col gap-3 items-center">
           <button
             onClick={() => {
               const summary = MetricsService.getSummary();
               if (summary) {
-                alert(`📊 SYSTEM METRICS REPORT\n\nRuns: ${summary.totalRuns}\nSuccess Rate: ${summary.successRate}\nAvg Latency: ${summary.avgLatency}\nTotal Tokens: ${summary.totalTokens}\nEst. Cost: ${summary.estimatedCost}\nLast Error: ${summary.lastError}`);
+                alert(`📊 INFORME DE METRICAS DEL SISTEMA\n\nEjecuciones: ${summary.totalRuns}\nTasa de Éxito: ${summary.successRate}\nLatencia Promedio: ${summary.avgLatency}\nTokens Totales: ${summary.totalTokens}\nCosto Est.: ${summary.estimatedCost}\nÚltimo Error: ${summary.lastError}`);
               } else {
-                alert("No metrics collected yet. Run an analysis!");
+                alert("No se han registrado métricas todavía.");
               }
             }}
-            className="text-[10px] text-gray-400 hover:text-blue-500 flex items-center justify-center gap-1 mx-auto transition-colors"
+            className="text-xs text-gray-450 hover:text-blue-500 flex items-center gap-1.5 transition-colors"
           >
-            <Activity size={10} /> View System Health
+            <Activity size={12} /> Ver Estado del Sistema
+          </button>
+          
+          <button
+            onClick={handleResetSystem}
+            className="text-[10px] text-red-400 hover:text-red-650 flex items-center gap-1 transition-colors"
+          >
+            <RotateCcw size={10} /> Restablecer Todo el Sistema
           </button>
         </div>
       </div>
 
-      <div className="mt-auto flex justify-center gap-2 text-gray-400 text-xs items-center">
+      <div className="mt-12 flex justify-center gap-2 text-gray-400 text-xs items-center">
         <Lock size={12} />
-        <span>End-to-End Privacy (Local)</span>
+        <span>Privacidad Local Extremo a Extremo</span>
+      </div>
+    </div>
+  );
+
+  const renderLibraryTab = () => (
+    <div className="flex flex-col p-6 animate-fade-in">
+      <header className="mb-8 mt-6">
+        <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Biblioteca RAG</h1>
+        <p className="text-gray-500 mt-1.5 text-sm">Sube PDFs o videos de YouTube para indexar técnicas personalizadas.</p>
+      </header>
+
+      {ragUploadError && (
+        <div className="p-4 mb-6 bg-red-50 border border-red-200 text-red-700 rounded-2xl text-xs flex items-center gap-2">
+          <AlertCircle size={14} className="shrink-0" />
+          <div className="flex-1">{ragUploadError}</div>
+          <button onClick={() => setRagUploadError(null)} className="font-bold">✕</button>
+        </div>
+      )}
+
+      {/* Input section */}
+      <div className="space-y-6">
+        {/* PDF Uploader */}
+        <div className="border-2 border-dashed border-gray-300 rounded-3xl p-6 text-center hover:border-blue-500 transition-all relative cursor-pointer group bg-white shadow-sm">
+          <input 
+            type="file" 
+            accept="application/pdf" 
+            className="absolute inset-0 opacity-0 cursor-pointer" 
+            onChange={handlePdfUpload} 
+            disabled={isUploadingRag} 
+          />
+          <div className="flex flex-col items-center gap-2">
+            <div className="p-3 bg-blue-50 rounded-2xl text-blue-600 group-hover:scale-110 transition-transform">
+              <Plus size={24} />
+            </div>
+            <p className="text-sm font-semibold text-gray-700">Subir PDF de BJJ</p>
+            <p className="text-xs text-gray-450">Manuales, reglas, o guías escritas (Máx 10MB)</p>
+          </div>
+        </div>
+
+        {/* YouTube Link Submitter */}
+        <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200/50">
+          <h3 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-1.5">
+            <Youtube size={16} className="text-red-500" />
+            Indexar Enlace de YouTube
+          </h3>
+          <form onSubmit={handleYoutubeSubmit} className="flex gap-2">
+            <input
+              type="url"
+              placeholder="Pega enlace de YouTube aquí..."
+              value={youtubeUrlInput}
+              onChange={e => setYoutubeUrlInput(e.target.value)}
+              className="flex-1 px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-xs outline-none focus:bg-white focus:border-blue-500 transition-colors"
+              disabled={isSubmittingYoutube}
+            />
+            <button
+              type="submit"
+              className="p-3 bg-black hover:bg-gray-805 text-white rounded-2xl transition-colors disabled:opacity-50"
+              disabled={isSubmittingYoutube || !youtubeUrlInput}
+            >
+              {isSubmittingYoutube ? (
+                <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+              ) : (
+                <Plus size={20} />
+              )}
+            </button>
+          </form>
+        </div>
+
+        {/* Sources List */}
+        <div className="space-y-3">
+          <h3 className="text-xs font-semibold text-gray-450 uppercase tracking-wider pl-1">Fuentes Indexadas ({ragSources.length})</h3>
+          
+          {ragSources.length === 0 ? (
+            <div className="text-center py-10 bg-white rounded-3xl border border-gray-200/50 text-gray-450 p-6 flex flex-col items-center gap-2">
+              <BookOpen size={28} className="text-gray-300" />
+              <p className="text-sm font-semibold">Tu biblioteca está vacía</p>
+              <p className="text-xs max-w-xs leading-relaxed">Sube contenido para que el coach analice tus sparring utilizando tu propia biblioteca en lugar de solo la base estándar.</p>
+            </div>
+          ) : (
+            ragSources.map((source) => {
+              const isPdf = source.type === 'pdf';
+              const isRejected = source.contentSummary.startsWith("Rechazado");
+              const isPending = !source.validated && !isRejected;
+
+              return (
+                <GlassCard key={source.id} className="p-4 border-0 shadow-sm bg-white relative">
+                  <div className="flex gap-3 items-start pr-8">
+                    <div className={`p-2 rounded-xl shrink-0 ${isPdf ? 'bg-blue-50 text-blue-600' : 'bg-red-50 text-red-600'}`}>
+                      {isPdf ? <FileText size={18} /> : <Youtube size={18} />}
+                    </div>
+                    <div className="min-w-0 flex-1">
+                      <h4 className="font-bold text-gray-800 text-sm truncate">{source.name}</h4>
+                      <p className="text-xs text-gray-500 mt-1 leading-relaxed">
+                        {source.contentSummary}
+                      </p>
+                      {source.techniquesCovered.length > 0 && (
+                        <div className="flex flex-wrap gap-1 mt-2.5">
+                          {source.techniquesCovered.slice(0, 4).map((tech, idx) => (
+                            <span key={idx} className="px-2 py-0.5 bg-gray-50 border border-gray-150 rounded text-[10px] font-medium text-gray-650">
+                              {tech}
+                            </span>
+                          ))}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+
+                  {/* Badges / Validation Indicators */}
+                  <div className="absolute top-4 right-4 flex items-center gap-2">
+                    {source.validated && (
+                      <span className="w-5 h-5 rounded-full bg-green-100 text-green-600 flex items-center justify-center" title="Validado e Indexado">
+                        <Check size={12} strokeWidth={3} />
+                      </span>
+                    )}
+                    {isPending && (
+                      <div className="w-4 h-4 border-2 border-gray-305 border-t-blue-500 rounded-full animate-spin" title="Validando..." />
+                    )}
+                    {isRejected && (
+                      <span className="w-5 h-5 rounded-full bg-red-100 text-red-600 flex items-center justify-center" title="Contenido Inválido (No es BJJ)">
+                        <X size={12} strokeWidth={3} />
+                      </span>
+                    )}
+                    <button
+                      onClick={() => handleDeleteRagSource(source.id)}
+                      className="p-1 text-gray-350 hover:text-red-500 rounded transition-colors"
+                      title="Eliminar de RAG"
+                    >
+                      <Trash2 size={14} />
+                    </button>
+                  </div>
+                </GlassCard>
+              );
+            })
+          )}
+        </div>
+      </div>
+    </div>
+  );
+
+  const renderProgressTab = () => {
+    const masteredCount = progressList.filter(p => p.status === 'mastered').length;
+    const learningCount = progressList.filter(p => p.status === 'learning').length;
+    
+    return (
+      <div className="flex flex-col p-6 animate-fade-in">
+        <header className="mb-8 mt-6">
+          <h1 className="text-3xl font-extrabold text-gray-900 tracking-tight">Seguimiento</h1>
+          <p className="text-gray-500 mt-1.5 text-sm">IA Coach: Monitorea tus técnicas y adecua los recursos automáticamente.</p>
+        </header>
+
+        {/* Coach Overview Card */}
+        <GlassCard className="p-6 bg-gradient-to-br from-gray-900 to-blue-950 text-white border-0 shadow-lg mb-6">
+          <div className="flex items-start justify-between mb-4">
+            <div>
+              <span className="text-[10px] uppercase tracking-wider text-blue-300 font-bold">Estado de tu Aprendizaje</span>
+              <h2 className="text-2xl font-bold mt-1">Tu Nivel de Jiu-Jitsu</h2>
+            </div>
+            <div className="p-2.5 bg-white/10 rounded-2xl text-blue-300 shadow-inner">
+              <Award size={24} />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4 border-t border-white/10 pt-4 mt-2">
+            <div>
+              <p className="text-xs text-blue-200">Técnicas Dominadas</p>
+              <p className="text-2xl font-black mt-1 flex items-baseline gap-1 text-green-400">
+                {masteredCount} <span className="text-xs text-gray-400 font-normal">hechas</span>
+              </p>
+            </div>
+            <div>
+              <p className="text-xs text-blue-200">En Aprendizaje</p>
+              <p className="text-2xl font-black mt-1 flex items-baseline gap-1 text-yellow-400">
+                {learningCount} <span className="text-xs text-gray-400 font-normal">activas</span>
+              </p>
+            </div>
+          </div>
+          
+          <div className="mt-4 p-3 bg-white/5 rounded-xl text-xs text-blue-100 flex gap-2 items-start italic leading-relaxed">
+            <Quote size={12} className="shrink-0 text-blue-400 rotate-180" />
+            <span>"El coach de IA está observando tus sparrings. Si detecta que fallas la misma técnica repetidamente, adaptará el material para darte explicaciones alternativas."</span>
+          </div>
+        </GlassCard>
+
+        {/* Technique List */}
+        <div className="space-y-4 mb-8">
+          <h3 className="text-xs font-semibold text-gray-450 uppercase tracking-wider pl-1">Mis Técnicas Practicadas</h3>
+
+          {progressList.length === 0 ? (
+            <div className="text-center py-10 bg-white rounded-3xl border border-gray-200/50 text-gray-450 p-6">
+              <Zap size={24} className="text-gray-300 mx-auto mb-2" />
+              <p className="text-sm font-semibold">Aún no hay técnicas registradas</p>
+              <p className="text-xs text-gray-450 mt-1 max-w-xs mx-auto">Sube un sparring grabado en la pestaña 'Sparring' y las técnicas analizadas aparecerán aquí automáticamente.</p>
+            </div>
+          ) : (
+            progressList.map((progress) => {
+              const isMastered = progress.status === 'mastered';
+              const queryUrl = `https://www.youtube.com/results?search_query=${encodeURIComponent(progress.assignedVideoQuery)}`;
+
+              return (
+                <GlassCard key={progress.techniqueName} className="p-5 border-0 shadow-sm bg-white">
+                  <div className="flex justify-between items-start mb-3">
+                    <h4 className="font-bold text-gray-900 text-sm leading-tight pr-4">
+                      {progress.techniqueName}
+                    </h4>
+                    <span className={`px-2 py-0.5 rounded-full text-[9px] font-bold uppercase shrink-0 ${
+                      isMastered ? 'bg-green-50 text-green-600 border border-green-200' : 'bg-blue-50 text-blue-600 border border-blue-200'
+                    }`}>
+                      {isMastered ? 'Dominada' : 'En Estudio'}
+                    </span>
+                  </div>
+
+                  {/* Success Rate Bar */}
+                  <div className="space-y-1.5 mb-4">
+                    <div className="flex justify-between text-[10px] text-gray-500">
+                      <span>Tasa de éxito: {progress.successRate}%</span>
+                      <span>Intentos: {progress.attemptsCount}</span>
+                    </div>
+                    <div className="w-full bg-gray-100 h-1.5 rounded-full overflow-hidden">
+                      <div 
+                        className={`h-full rounded-full transition-all duration-500 ${
+                          isMastered ? 'bg-green-500' : 'bg-blue-500'
+                        }`} 
+                        style={{ width: `${progress.successRate}%` }} 
+                      />
+                    </div>
+                  </div>
+
+                  {/* YouTube Recommendation Link */}
+                  <div className="bg-gray-50 border border-gray-100 rounded-xl p-3 flex flex-col gap-2">
+                    <div className="flex items-center gap-1.5 text-xs text-gray-650">
+                      <Youtube size={14} className="text-red-500 shrink-0" />
+                      <span className="font-bold text-gray-800">Recurso de estudio recomendado:</span>
+                    </div>
+                    
+                    <a
+                      href={queryUrl}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 hover:text-blue-800 hover:underline text-xs flex items-center gap-1 font-semibold break-all pl-5"
+                    >
+                      Buscar: "{progress.assignedVideoQuery}"
+                      <ExternalLink size={12} className="shrink-0" />
+                    </a>
+
+                    {progress.recommendationReasoning && (
+                      <p className="text-[10px] text-gray-500 italic pl-5 leading-relaxed">
+                        Coach: {progress.recommendationReasoning}
+                      </p>
+                    )}
+
+                    {progress.adaptationVersion > 0 && (
+                      <span className="inline-flex self-start text-[9px] font-semibold text-orange-600 bg-orange-50 border border-orange-100 px-1.5 py-0.5 rounded ml-5">
+                        Recomendación Adaptada (v{progress.adaptationVersion})
+                      </span>
+                    )}
+                  </div>
+                </GlassCard>
+              );
+            })
+          )}
+        </div>
+
+        {/* Adaptation Logs Section */}
+        {adaptationLogs.length > 0 && (
+          <div className="space-y-3 mb-6">
+            <h3 className="text-xs font-semibold text-gray-450 uppercase tracking-wider pl-1">Historial de Adaptaciones</h3>
+            {adaptationLogs.map((log) => (
+              <div key={log.id} className="p-4 bg-orange-50/50 border border-orange-100 rounded-2xl flex flex-col gap-1.5 text-xs text-gray-700">
+                <div className="flex justify-between items-center font-bold text-orange-800">
+                  <span className="flex items-center gap-1">
+                    <Zap size={12} />
+                    Cambio en: {log.techniqueName}
+                  </span>
+                  <span className="text-[10px] text-gray-400 font-mono">{new Date(log.timestamp).toLocaleDateString()}</span>
+                </div>
+                <p className="text-gray-500 leading-normal">
+                  Cambiamos la búsqueda anterior <span className="font-mono bg-orange-100 px-1 rounded text-orange-700">"{log.previousQuery}"</span> por una enfocada a tu error: <span className="font-mono bg-green-100 px-1 rounded text-green-800 font-bold">"{log.newQuery}"</span>.
+                </p>
+                <p className="italic text-gray-650 mt-0.5 pl-2 border-l border-orange-200">
+                  "{log.reason}"
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  const renderHome = () => (
+    <div className="flex flex-col h-full bg-[#f2f2f7] relative overflow-hidden">
+      {/* Scrollable Content area */}
+      <div className="flex-1 overflow-y-auto no-scrollbar pb-24">
+        {activeTab === 'sparring' && renderSparringTab()}
+        {activeTab === 'library' && renderLibraryTab()}
+        {activeTab === 'progress' && renderProgressTab()}
+      </div>
+
+      {/* Sleek iOS/PWA-style Bottom Tab Bar */}
+      <div className="absolute bottom-0 left-0 right-0 z-30 bg-white/80 backdrop-blur-xl border-t border-gray-200/60 py-3.5 px-8 flex justify-around items-center rounded-t-3xl shadow-lg">
+        <button 
+          onClick={() => setActiveTab('sparring')} 
+          className={`flex flex-col items-center gap-1.5 transition-all duration-200 ${activeTab === 'sparring' ? 'text-blue-600 scale-105 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          <Activity size={20} className={activeTab === 'sparring' ? 'stroke-[2.5px]' : ''} />
+          <span className="text-[10px] uppercase tracking-wider">Sparring</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('library')} 
+          className={`flex flex-col items-center gap-1.5 transition-all duration-200 ${activeTab === 'library' ? 'text-blue-600 scale-105 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          <BookOpen size={20} className={activeTab === 'library' ? 'stroke-[2.5px]' : ''} />
+          <span className="text-[10px] uppercase tracking-wider">Library</span>
+        </button>
+        <button 
+          onClick={() => setActiveTab('progress')} 
+          className={`flex flex-col items-center gap-1.5 transition-all duration-200 ${activeTab === 'progress' ? 'text-blue-600 scale-105 font-bold' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          <Award size={20} className={activeTab === 'progress' ? 'stroke-[2.5px]' : ''} />
+          <span className="text-[10px] uppercase tracking-wider">My Coach</span>
+        </button>
       </div>
     </div>
   );
@@ -963,6 +1535,55 @@ const App: React.FC = () => {
       {view === 'result' && (
         <div className="w-full h-full max-w-lg mx-auto bg-[#f2f2f7]">
           {renderResult()}
+        </div>
+      )}
+
+      {/* Settings Modal (API Key Entry) */}
+      {(showSettingsModal || apiKeyMissing) && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-6 bg-black/40 backdrop-blur-sm animate-fade-in">
+          <div className="w-full max-w-sm bg-white rounded-3xl shadow-2xl overflow-hidden animate-scale-up">
+            <div className="bg-gray-100 px-6 py-4 border-b border-gray-200 flex justify-between items-center">
+              <div className="flex items-center gap-2 text-gray-800">
+                <Lock size={18} />
+                <span className="font-bold text-sm">Configuración de API Key</span>
+              </div>
+              {!apiKeyMissing && (
+                <button
+                  onClick={() => setShowSettingsModal(false)}
+                  className="p-1 rounded-full hover:bg-gray-200 transition-colors"
+                >
+                  <X size={20} className="text-gray-500" />
+                </button>
+              )}
+            </div>
+
+            <div className="p-6 space-y-4">
+              <p className="text-xs text-gray-505 leading-relaxed">
+                Para interactuar con los servicios de inteligencia artificial localmente en tu navegador, necesitas configurar tu clave API de Gemini. 
+                Se guardará localmente de forma segura en tu navegador.
+              </p>
+              <div className="space-y-2">
+                <label className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Gemini API Key</label>
+                <input
+                  type="password"
+                  placeholder="AIzaSy..."
+                  value={apiKeyInput}
+                  onChange={(e) => setApiKeyInput(e.target.value)}
+                  className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-2xl text-sm outline-none focus:bg-white focus:border-blue-500 transition-colors font-mono"
+                />
+              </div>
+            </div>
+
+            <div className="bg-gray-50 px-6 py-4 flex gap-3">
+              <Button 
+                fullWidth 
+                onClick={() => handleSaveApiKey(apiKeyInput)} 
+                disabled={!apiKeyInput.trim()}
+              >
+                Guardar Clave
+              </Button>
+            </div>
+          </div>
         </div>
       )}
     </div>

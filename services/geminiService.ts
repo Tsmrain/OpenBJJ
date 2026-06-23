@@ -358,9 +358,20 @@ const extractFramesFromVideo = async (videoBlob: Blob, numFrames: number = 9): P
   return frames;
 };
 
-export const analyzeBJJVideo = async (videoBlob: Blob, signal?: AbortSignal): Promise<AnalysisResult> => {
-  // Client initialization using env var
-  const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+const getApiKey = (): string => {
+  const envKey = process.env.API_KEY;
+  if (envKey && envKey !== 'undefined' && envKey !== 'null' && envKey.trim() !== '') {
+    return envKey;
+  }
+  if (typeof localStorage !== 'undefined') {
+    return localStorage.getItem('VITE_API_KEY') || '';
+  }
+  return '';
+};
+
+export const analyzeBJJVideo = async (videoBlob: Blob, ragContext: string = "", signal?: AbortSignal): Promise<AnalysisResult> => {
+  // Client initialization using env var or localstorage
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
 
   try {
     // 1. Extract Frames (9 frames, 512px)
@@ -387,7 +398,7 @@ INSTRUCTIONS:
    - "techniques": Array of techniques observed (max 3)
    - "mistakes": Array of biomechanical errors (max 3, empty if none)
    - "tips": Array of improvement tips from Saulo Ribeiro's methodology (max 3)
-   - "reference": Object with "book", "technique" (exact Section ID + Name from TOC), "belt" (belt level), "quote" (key concept from the book)
+   - "reference": Object with "book", "technique" (exact Section ID + Name from TOC or RAG context), "belt" (belt level or "RAG Library"), "quote" (key concept or quote)
    - "youtube_query": Optimized YouTube search query for this fighter's technique (e.g. "BJJ mount escape elbow technique tutorial")
 
 IMPORTANT: Each fighter gets their OWN independent analysis, reference, and youtube_query.
@@ -395,8 +406,8 @@ Respond ONLY in valid JSON.`
       }
     ];
     // 3. MODEL INFERENCE WITH RETRY & FALLBACK
-    // Using 'gemini-3.5-flash' as the primary recommended stable model.
-    const modelsToTry = ['gemini-3.5-flash', 'gemini-3.1-flash-lite', 'gemini-2.5-flash'];
+    // Using 'gemini-2.5-flash-lite' as the primary model.
+    const modelsToTry = ['gemini-2.5-flash-lite'];
     let lastError: any;
 
     for (const modelName of modelsToTry) {
@@ -420,7 +431,9 @@ Respond ONLY in valid JSON.`
             },
             config: {
               systemInstruction: {
-                parts: [{ text: JIU_JITSU_UNIVERSITY_CONTEXT }]
+                parts: [{ 
+                  text: `${JIU_JITSU_UNIVERSITY_CONTEXT}\n\n=========================================\nADDITIONAL USER-PROVIDED LIBRARY CONTEXT (RAG):\n${ragContext}\n\nINSTRUCTION: First, prioritize identifying if the techniques performed match any source in the user's RAG library context above. If they match, references should reference that source's name and details (e.g. book = Source Name, technique = Technique Name, belt = "RAG Library", quote = summary or key instruction). Otherwise, default to the Jiu-Jitsu University book or general BJJ methodology.`
+                }]
               },
               temperature: 0.1,
               responseMimeType: "application/json",
@@ -522,5 +535,156 @@ Respond ONLY in valid JSON.`
   } catch (err: any) {
     // Catch-all for top level errors
     throw err;
+  }
+};
+
+/**
+ * Validates if an uploaded PDF file or YouTube link details are BJJ-related.
+ */
+export const validateBJJSource = async (
+  type: 'pdf' | 'youtube',
+  sourceData: { base64Pdf?: string; url?: string; title?: string }
+): Promise<{ valid: boolean; name: string; summary: string; techniques: string[]; reason?: string }> => {
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
+  const modelName = 'gemini-2.5-flash-lite';
+
+  let parts: any[] = [];
+  if (type === 'pdf' && sourceData.base64Pdf) {
+    parts.push({
+      inlineData: {
+        mimeType: 'application/pdf',
+        data: sourceData.base64Pdf
+      }
+    });
+    parts.push({
+      text: `Analyze this PDF document.
+Validate if it is primarily related to Brazilian Jiu-Jitsu (BJJ), Grappling, Judo, or sparring techniques.
+If NOT related to BJJ, return JSON:
+{
+  "valid": false,
+  "name": "",
+  "summary": "",
+  "techniques": [],
+  "reason": "Explain briefly why the document is not related to BJJ."
+}
+
+If YES, it is related, analyze the content and return JSON:
+{
+  "valid": true,
+  "name": "The actual title or a descriptive name of the document",
+  "summary": "A concise 2-3 sentence summary of the core BJJ techniques, strategies, or concepts detailed in this file.",
+  "techniques": ["Technique Name 1", "Technique Name 2"] // Extract up to 10 key techniques mentioned in the PDF
+}
+
+Respond ONLY in valid JSON.`
+    });
+  } else {
+    parts.push({
+      text: `Analyze this YouTube video information:
+URL: ${sourceData.url}
+Title: ${sourceData.title || 'Unknown YouTube Video'}
+
+Validate if the video title and context are related to Brazilian Jiu-Jitsu (BJJ), Grappling, submission wrestling, or BJJ martial arts training.
+If NOT related to BJJ, return JSON:
+{
+  "valid": false,
+  "name": "",
+  "summary": "",
+  "techniques": [],
+  "reason": "Explain briefly why this video is not related to BJJ."
+}
+
+If YES, it is related, analyze the details and return JSON:
+{
+  "valid": true,
+  "name": "The title of the video",
+  "summary": "A brief summary of what technique is likely covered in this video based on the title and BJJ knowledge.",
+  "techniques": ["Technique Name 1"] // Extract/identify the core BJJ techniques covered
+}
+
+Respond ONLY in valid JSON.`
+    });
+  }
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: {
+        parts,
+        role: 'user'
+      },
+      config: {
+        temperature: 0.1,
+        responseMimeType: "application/json"
+      }
+    });
+
+    const jsonText = response.text;
+    if (!jsonText) throw new Error("Gemini validation response was empty");
+    
+    return JSON.parse(jsonText);
+  } catch (e: any) {
+    console.error("Gemini validation failed:", e);
+    return {
+      valid: false,
+      name: sourceData.title || "Unknown source",
+      summary: "",
+      techniques: [],
+      reason: `Validation error: ${e.message}`
+    };
+  }
+};
+
+/**
+ * Generates an adapted study resource search query and reasoning when a user keeps failing a technique.
+ */
+export const adaptLearningResource = async (
+  techniqueName: string,
+  currentQuery: string,
+  mistakes: string[]
+): Promise<{ newQuery: string; reasoning: string }> => {
+  const ai = new GoogleGenAI({ apiKey: getApiKey() });
+  const modelName = 'gemini-2.5-flash-lite';
+
+  const prompt = `The BJJ student is struggling to learn the technique: "${techniqueName}".
+Their current study YouTube query was: "${currentQuery}".
+During their sparring video audits, they made the following mistakes:
+${mistakes.map(m => `- ${m}`).join('\n')}
+
+They are NOT learning successfully from the current information. 
+You need to adapt and change their learning path:
+1. Generate a NEW, different, highly optimized YouTube search query that targets alternative instructionals, troubleshooting details, details on framing/leverage, or specific adjustments for this technique (e.g. if the query was "half guard pass", and they fail due to "opponent locking the knee underhook", change to "how to defeat underhook half guard pass BJJ" or "troubleshooting half guard pass knee slice"). Make sure the query ends with "BJJ".
+2. Provide a short reasoning statement explaining why this change was made and what specific biomechanical adjustment they should focus on.
+
+Return your response in this exact JSON schema:
+{
+  "newQuery": "The adapted YouTube search query",
+  "reasoning": "A 1-2 sentence explanation of the change and advice for the student."
+}
+
+Respond ONLY in valid JSON.`;
+
+  try {
+    const response = await ai.models.generateContent({
+      model: modelName,
+      contents: {
+        parts: [{ text: prompt }],
+        role: 'user'
+      },
+      config: {
+        temperature: 0.2,
+        responseMimeType: "application/json"
+      }
+    });
+
+    const jsonText = response.text;
+    if (!jsonText) throw new Error("Gemini adaptation response was empty");
+    return JSON.parse(jsonText);
+  } catch (e) {
+    console.error("Gemini adaptation failed, using fallback:", e);
+    return {
+      newQuery: `${techniqueName} troubleshooting details BJJ`,
+      reasoning: `We adapted your search to focus on troubleshooting the details for ${techniqueName}.`
+    };
   }
 };
